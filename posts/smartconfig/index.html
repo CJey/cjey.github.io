@@ -1,0 +1,754 @@
+<!doctype html>
+
+
+
+
+<html class="theme-next mist">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.lug.ustc.edu.cn/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="有趣,网络,SmartConfig,Wifi,通信," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="偶尔见识了一台无线监控设备的网络接入方式, 从而了解到了Smart Config技术本文在于阐述我对Smart Config这一技术的理解 简述简单来说, 这是一种让你可以在没有和其他设备(支持SmartConfig技术)建立任何性质的通讯链路的情况下, 配置该设备接入wifi网络 虚构一个实际场景的话, 会是这样: 你购买了一个带有wifi的摄像头, 不过这个摄像头没有usb, 没有以太网, 没">
+<meta name="keywords" content="有趣,网络,SmartConfig,Wifi,通信">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Smart Config 技术原理">
+<meta property="og:url" content="https://cjey.me/posts/smartconfig/index.html">
+<meta property="og:site_name" content="听泠">
+<meta property="og:description" content="偶尔见识了一台无线监控设备的网络接入方式, 从而了解到了Smart Config技术本文在于阐述我对Smart Config这一技术的理解 简述简单来说, 这是一种让你可以在没有和其他设备(支持SmartConfig技术)建立任何性质的通讯链路的情况下, 配置该设备接入wifi网络 虚构一个实际场景的话, 会是这样: 你购买了一个带有wifi的摄像头, 不过这个摄像头没有usb, 没有以太网, 没">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://cjey.me/posts/smartconfig/station_to_ap.jpg">
+<meta property="og:image" content="https://cjey.me/posts/smartconfig/ap_to_station.jpg">
+<meta property="og:updated_time" content="2018-04-11T05:58:38.368Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Smart Config 技术原理">
+<meta name="twitter:description" content="偶尔见识了一台无线监控设备的网络接入方式, 从而了解到了Smart Config技术本文在于阐述我对Smart Config这一技术的理解 简述简单来说, 这是一种让你可以在没有和其他设备(支持SmartConfig技术)建立任何性质的通讯链路的情况下, 配置该设备接入wifi网络 虚构一个实际场景的话, 会是这样: 你购买了一个带有wifi的摄像头, 不过这个摄像头没有usb, 没有以太网, 没">
+<meta name="twitter:image" content="https://cjey.me/posts/smartconfig/station_to_ap.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: false,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> Smart Config 技术原理 | 听泠 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="site-title">听泠</span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Smart Config 技术原理
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-06-15T02:39:57+08:00" content="2015-06-15">
+              2015-06-15
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/纸上谈兵/" itemprop="url" rel="index">
+                    <span itemprop="name">纸上谈兵</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/posts/smartconfig/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="posts/smartconfig/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-file-o"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+              </span>
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>偶尔见识了一台无线监控设备的网络接入方式, 从而了解到了Smart Config技术<br>本文在于阐述我对Smart Config这一技术的理解</p>
+<h2 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h2><p>简单来说, 这是一种让你可以在没有和其他设备(支持SmartConfig技术)建立任何性质的通讯链路的情况下, 配置该设备接入wifi网络</p>
+<p>虚构一个实际场景的话, 会是这样:</p>
+<p>你购买了一个带有wifi的摄像头, 不过这个摄像头没有usb, 没有以太网, 没有蓝牙, 没有nfc, gsm就更不可能了, 只有wifi, 那么问题来了:<br>你如何配置这个摄像头接入你家的wifi?<br>乍一想, 没有数据链路, 如何进行数据交换?<br>对的, SmartConfig就是用在这种场景下的, 如果这个摄像头的wifi支持SmartConfig技术, 那么你只需这样几个步骤</p>
+<ol>
+<li>摄像头插上电源</li>
+<li>安装制造商提供的手机app(应用无需任何特殊权限, 只需要手机当前是接入wifi的)</li>
+<li>在摄像头附近打开app, 输入你家wifi的密码, 点击确认, 稍等片刻, 不出意外的话, 摄像头已经接入你家wifi了</li>
+</ol>
+<p>这项技术由德州仪器提出, 并且应用在自己的CC3000系列芯片上. 不过, 从原理上来说, 支持混杂模式的wifi芯片都可以应用该技术</p>
+<a id="more"></a>
+<h2 id="猜想"><a href="#猜想" class="headerlink" title="猜想"></a>猜想</h2><p>首先, 你可能会联想到是不是这个app控制了手机, 让手机主动接入摄像头的wifi网络, 然后交换数据. 这确实是一个行得通的办法, 但是却不实用, 控制操作系统更换当前的网络连接是敏感操作, 普通的app没这个权限, 那么就需要用户参与其中, 对于一般的用户而言, 这样的流程就显得复杂且难以理解了</p>
+<p>这样看来, 摄像头并没有和你控制的任何一个设备建立任何性质的连接<br>一般来说, 我们潜意识里会默认通讯都是双向的, 以这个习惯来看待SmartConfig似乎觉得匪夷所思</p>
+<p>其实, 在这种场景下, 我们只需要<strong>能够把wifi的名称和密码告诉摄像头</strong>就行了, 摄像头有没有回馈并不重要</p>
+<p>顺着这个思路, 我们发现可以这么做, 手机app上生成一个包含wifi名称和密码的二维码, 然后放置在摄像头前, 摄像头只要识别了二维码自然就可以接入wifi<br>但是, 扫二维码的方式依赖视频信号输入, 并不是通用的手段(因为现实场景中的设备并不都是摄像头), 而且场景里也没有采用这种做法</p>
+<p>这么分析下来, 传播wifi信息的渠道只可能是wifi本身了<br>摄像头尚未接入wifi, 况且wifi也是加密的, app并没有能力控制wifi的底层通讯, app又是如何将信息成功外泄给摄像头的?</p>
+<h2 id="共识"><a href="#共识" class="headerlink" title="共识"></a>共识</h2><p>理解SmartConfig原理前需要说两个我总结的观点, 作为下文的共识</p>
+<p>其一</p>
+<blockquote>
+<p>我认为<br>无线数据的传播形式必定是广播</p>
+</blockquote>
+<p>至少目前是这样, 因为我所知道的能做到点对点的无线传输只有量子隐形传输, 可惜还在实验室中</p>
+<p>既然是广播, 那么必然可以被监听, 就像一个酒吧里有两个中国人和两个俄罗斯人, 中国人和中国人说话, 俄罗斯人听得到, 只不过听不懂, 反之亦然</p>
+<p>其二</p>
+<blockquote>
+<p>我认为<br>任何可控的模式都可以被用于编码, 用于数据交换</p>
+</blockquote>
+<p>当前wifi应用的几种主流加密方式都存在一个特点, 明文的长度和加密后的密文长度之间是线性关系</p>
+<p>即: 密文长度 = 明文长度 + 算法相关的常量C, 也就是说, 只要明文长度可控, 密文的长度即是可控的</p>
+<p>这个特点是SmartConfig的核心原理</p>
+<h2 id="技术原理"><a href="#技术原理" class="headerlink" title="技术原理"></a>技术原理</h2><p>如果了解802.11的帧格式, 你就知道, 链路层载荷数据(即网络层头部及网络层数)在数据帧中是清晰可辨的, 只要接收到802.11帧就可以立刻提取出载荷数据, 计算载荷数据的长度自不用说, 而这里的载荷数据, 通常就是密文</p>
+<p>常见的两种数据帧格式:</p>
+<p>Station to AP<br><img src="station_to_ap.jpg" alt="Station to AP"></p>
+<p>AP to Station<br><img src="ap_to_station.jpg" alt="AP to Station"></p>
+<p>密文长度有了, 接下来我们看一下明文的结构</p>
+<p>普通权限的应用程序是没有能力完全控制和定义传输层及下层所有协议数据的, 唯一可以完全控制的就是应用层数据, 那就继续分析一下TCP/IP协议栈中的网络层和传输层的数据结构</p>
+<p>常用的网络层协议非IPv4莫属, IPv4的头部绝大多数情况下都是定长的20字节, <strong>长度几乎完全可控</strong></p>
+<p>传输层协议我们选择UDP, 因为UDP协议头部为定长的8字节, <strong>完全可控</strong>(当然, 选择UDP还有别的原因)</p>
+<p>这么看来, 我们有能力完全控制明文的长度</p>
+<p><code>明文长度 = 20 + 8 + 应用层数据长度</code></p>
+<p>密文长度也脱口而出</p>
+<p><code>密文长度 = 20 + 8 + 应用层数据长度 + 算法相关的常量C</code></p>
+<p>如果我需要你发出一个密文长度为1000字节的802.11帧, 那么你只需要在UDP中塞满任意(1000 - 20 - 8 - C)个字节即可</p>
+<p>接下来, 只要我们利用可控的密文长度定义一张编码表即可将数据告诉任何知道这张编码表的设备了</p>
+<p>原理说完了, 按照这个原理, 几乎可以实现任意数据的传播, 至于SmartConfig采用何种编码, 这个则是技术的实现细节, 本文不讨论</p>
+<h2 id="流程示例"><a href="#流程示例" class="headerlink" title="流程示例"></a>流程示例</h2><p>为了示意一下整个过程, 我们简单定义一张编码表:</p>
+<blockquote><p>密文长度 =&gt; 映射释义</p>
+<p>1234 =&gt; 起始符; 连续的3个起始符, 用于表示数据传输开始</p>
+<p>1324 =&gt; 结束符; 连续的3个结束符, 用于表示数据传输结束</p>
+<p>110 =&gt; 间隔符; 连续的2个间隔符, 用于表示数据符之间的间隔</p>
+<p>1000 =&gt; 数据符; 表示 ASCII 0x00</p>
+<p>1001 =&gt; 数据符; 表示 ASCII 0x01</p>
+<p>…</p>
+<p>1127 =&gt; 数据符; 表示 ASCII 0x7F</p>
+</blockquote>
+<p>假设我们要把字符串”CJey”(密码)告诉摄像头, 整个流程大致如下: (假设常量C为16)</p>
+<p>手机app部分:</p>
+<ol>
+<li>打开手机app, 在输入框中填入要发送的字符串”CJey”, 点击发送</li>
+<li>app连续发送三个UDP广播包, 填充数据为1190个0x00字节(1234 - 16 - 20 - 8 = 1190), 表示传输开始</li>
+<li>app发送一个UDP广播包, 填充数据为1023个0x00字节(1067 - 16 -20 - 8 = 1023), 传输字符C</li>
+<li>app连续发送两个UDP广播包, 填充数据为66个0x00字节(110 - 16 - 20 - 8 = 66), 表示数据间隔</li>
+<li>app发送一个UDP广播包, 填充数据为1030个0x00字节(1074 - 16 -20 - 8 = 1030), 传输字符J</li>
+<li>app连续发送两个UDP广播包, 填充数据为66个0x00字节(110 - 16 - 20 - 8 = 66), 表示数据间隔</li>
+<li>app发送一个UDP广播包, 填充数据为1057个0x00字节(1101 - 16 -20 - 8 = 1057), 传输字符e</li>
+<li>app连续发送两个UDP广播包, 填充数据为66个0x00字节(110 - 16 - 20 - 8 = 66), 表示数据间隔</li>
+<li>app发送一个UDP广播包, 填充数据为1077个0x00字节(1121 - 16 -20 - 8 = 1077), 传输字符y</li>
+<li>app连续发送三个UDP广播包, 填充数据为1280个0x00字节(1324- 16 - 20 - 8 = 1280), 表示传输结束</li>
+<li>从1开始循环多次, 直到超时或者摄像头成功接入wifi, 向app汇报成功</li>
+</ol>
+<p>摄像头部分:</p>
+<ol>
+<li>摄像头通电, 没有可用的wifi, 进入混杂模式, 开始监听信号覆盖范围内的所有wifi数据帧</li>
+<li>捕获数据帧, 如果连续收到3个密文长度为1234, 且来自于同一个发射源X的数据帧, 则进入下一步, 否则重复2</li>
+<li>捕获发射源X的数据帧, 持续捕获密文长度为110或者1000-1127之间的数据帧, 直到捕获到连续3个密文长度为1324的数据帧</li>
+<li>将上述数据帧按照编码表进行映射, 由于手机app并非是独占网络, 所以捕获到的数据可能有噪音, 比如解码出来的结果可能是(/表示分隔符): ACX/J/o@e/ymmm</li>
+<li>如果没有噪音, 记为候选数据RC, 重复捕获X, 进行二次验证, 通过则表示接收完成, 没通过也重复捕获X, 将这次所得结果同上一次做交集, 循环如此直到得出唯一结果, 即RC, 之后再重复5</li>
+<li>由于捕获的数据帧头部信息中已经包含了wifi的bssid信息, 使用”CJey”作为密码去尝试连接相应的wifi, 成功则向app报告, 失败则继续重复2</li>
+</ol>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://processors.wiki.ti.com/index.php/CC3000_Smart_Config" target="_blank" rel="noopener">SmartConfig的TI官方wiki</a><br><a href="http://www.ti.com/tool/smartconfig" target="_blank" rel="noopener">SmartConfig的TI官方介绍</a><br><a href="http://depletionregion.blogspot.ch/2013/10/cc3000-smart-config-transmitting-ssid.html" target="_blank" rel="noopener">CC3000 Smart Config - transmitting SSID and keyphrase</a><br><a href="http://electronics.stackexchange.com/questions/61704/how-does-ti-cc3000-wifi-smart-config-work" target="_blank" rel="noopener">How does TI CC3000 wifi smart config work?</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/有趣/" rel="tag">#有趣</a>
+          
+            <a href="/tags/网络/" rel="tag">#网络</a>
+          
+            <a href="/tags/SmartConfig/" rel="tag">#SmartConfig</a>
+          
+            <a href="/tags/Wifi/" rel="tag">#Wifi</a>
+          
+            <a href="/tags/通信/" rel="tag">#通信</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/posts/wifisecurity/" rel="prev" title="WiFi 数据加密的形式">
+                WiFi 数据加密的形式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="CJey" />
+          <p class="site-author-name" itemprop="name">CJey</p>
+          <p class="site-description motion-element" itemprop="description">记录对行业的理解, 对技术的理解, 解决问题的思路, 新奇想法的分享</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives/">
+              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/cjey" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="http://creativecommons.org/licenses/by/4.0" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by.svg" alt="Creative Commons" />
+            </a>
+          </div>
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简述"><span class="nav-number">1.</span> <span class="nav-text">简述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#猜想"><span class="nav-number">2.</span> <span class="nav-text">猜想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#共识"><span class="nav-number">3.</span> <span class="nav-text">共识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#技术原理"><span class="nav-number">4.</span> <span class="nav-text">技术原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#流程示例"><span class="nav-number">5.</span> <span class="nav-text">流程示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CJey</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'cjey';
+      var disqus_identifier = 'posts/smartconfig/';
+      var disqus_title = 'Smart Config 技术原理';
+      var disqus_url = 'https://cjey.me/posts/smartconfig/';
+
+      function run_disqus_script(disqus_script){
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+      
+        run_disqus_script('embed.js');
+      
+    </script>
+  
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>
