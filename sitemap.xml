@@ -30,13 +30,6 @@
   </url>
   
   <url>
-    <loc>https://cjey.me/about/index.html</loc>
-    
-    <lastmod>2018-04-11T05:58:38.368Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://cjey.me/categories/index.html</loc>
     
     <lastmod>2018-04-11T05:58:38.368Z</lastmod>
@@ -45,6 +38,13 @@
   
   <url>
     <loc>https://cjey.me/tags/index.html</loc>
+    
+    <lastmod>2018-04-11T05:58:38.368Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://cjey.me/about/index.html</loc>
     
     <lastmod>2018-04-11T05:58:38.368Z</lastmod>
     
