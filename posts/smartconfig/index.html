@@ -83,19 +83,22 @@
 
 
 <meta name="description" content="偶尔见识了一台无线监控设备的网络接入方式, 从而了解到了Smart Config技术本文在于阐述我对Smart Config这一技术的理解 简述简单来说, 这是一种让你可以在没有和其他设备(支持SmartConfig技术)建立任何性质的通讯链路的情况下, 配置该设备接入wifi网络 虚构一个实际场景的话, 会是这样: 你购买了一个带有wifi的摄像头, 不过这个摄像头没有usb, 没有以太网, 没">
-<meta name="keywords" content="有趣,网络,SmartConfig,Wifi,通信">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Smart Config 技术原理">
 <meta property="og:url" content="https://cjey.me/posts/smartconfig/index.html">
 <meta property="og:site_name" content="不思鱼">
 <meta property="og:description" content="偶尔见识了一台无线监控设备的网络接入方式, 从而了解到了Smart Config技术本文在于阐述我对Smart Config这一技术的理解 简述简单来说, 这是一种让你可以在没有和其他设备(支持SmartConfig技术)建立任何性质的通讯链路的情况下, 配置该设备接入wifi网络 虚构一个实际场景的话, 会是这样: 你购买了一个带有wifi的摄像头, 不过这个摄像头没有usb, 没有以太网, 没">
-<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://cjey.me/posts/smartconfig/station_to_ap.jpg">
 <meta property="og:image" content="https://cjey.me/posts/smartconfig/ap_to_station.jpg">
-<meta property="og:updated_time" content="2018-04-11T05:58:38.368Z">
+<meta property="article:published_time" content="2015-06-14T18:39:57.000Z">
+<meta property="article:modified_time" content="2018-04-11T05:58:38.368Z">
+<meta property="article:author" content="CJey">
+<meta property="article:tag" content="有趣">
+<meta property="article:tag" content="网络">
+<meta property="article:tag" content="SmartConfig">
+<meta property="article:tag" content="Wifi">
+<meta property="article:tag" content="通信">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Smart Config 技术原理">
-<meta name="twitter:description" content="偶尔见识了一台无线监控设备的网络接入方式, 从而了解到了Smart Config技术本文在于阐述我对Smart Config这一技术的理解 简述简单来说, 这是一种让你可以在没有和其他设备(支持SmartConfig技术)建立任何性质的通讯链路的情况下, 配置该设备接入wifi网络 虚构一个实际场景的话, 会是这样: 你购买了一个带有wifi的摄像头, 不过这个摄像头没有usb, 没有以太网, 没">
 <meta name="twitter:image" content="https://cjey.me/posts/smartconfig/station_to_ap.jpg">
 
 
@@ -115,7 +118,7 @@
 </script>
 
   <title> Smart Config 技术原理 | 不思鱼 </title>
-</head>
+<meta name="generator" content="Hexo 4.2.0"></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
 
@@ -278,7 +281,7 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/纸上谈兵/" itemprop="url" rel="index">
+                  <a href="/categories/%E7%BA%B8%E4%B8%8A%E8%B0%88%E5%85%B5/" itemprop="url" rel="index">
                     <span itemprop="name">纸上谈兵</span>
                   </a>
                 </span>
@@ -417,15 +420,15 @@
       
         <div class="post-tags">
           
-            <a href="/tags/有趣/" rel="tag">#有趣</a>
+            <a href="/tags/%E6%9C%89%E8%B6%A3/" rel="tag">#有趣</a>
           
-            <a href="/tags/网络/" rel="tag">#网络</a>
+            <a href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">#网络</a>
           
             <a href="/tags/SmartConfig/" rel="tag">#SmartConfig</a>
           
             <a href="/tags/Wifi/" rel="tag">#Wifi</a>
           
-            <a href="/tags/通信/" rel="tag">#通信</a>
+            <a href="/tags/%E9%80%9A%E4%BF%A1/" rel="tag">#通信</a>
           
         </div>
       
@@ -508,7 +511,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives/">
-              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-count">3</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -516,7 +519,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories/">
-                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-count">4</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -525,7 +528,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags/">
-                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -590,7 +593,7 @@
         <div class="copyright" >
   
   &copy;  2015 - 
-  <span itemprop="copyrightYear">2018</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -598,12 +601,12 @@
 </div>
 
 <div class="powered-by">
-  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+  由 <a class="theme-link" href="http://hexo.io" target="_blank" rel="noopener">Hexo</a> 强力驱动
 </div>
 
 <div class="theme-info">
   主题 -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
     NexT.Mist
   </a>
 </div>

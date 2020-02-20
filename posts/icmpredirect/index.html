@@ -83,17 +83,18 @@
 
 
 <meta name="description" content="背景公司研发的硬件, 运行自行定制的Android ROM(基于AOSP 4.4), 偶尔会发生一个怪异的网络问题  主机wifi首先接入当前网络A, 一切没问题(可以访问IDC服务器); 切换接入到另一个网络B, 无法访问IDC服务器, 但此时在网络B的主机访问其他的Internet服务并无问题 主机wifi首先接入网络B, 一切没问题; 切换接入到一个网络A, 一切没问题; 再切回到网络B,">
-<meta name="keywords" content="有趣,疑难杂症,恍然大悟">
 <meta property="og:type" content="article">
 <meta property="og:title" content="记一次网络诊断 - 切换wifi后主机无法访问服务器">
 <meta property="og:url" content="https://cjey.me/posts/icmpredirect/index.html">
 <meta property="og:site_name" content="不思鱼">
 <meta property="og:description" content="背景公司研发的硬件, 运行自行定制的Android ROM(基于AOSP 4.4), 偶尔会发生一个怪异的网络问题  主机wifi首先接入当前网络A, 一切没问题(可以访问IDC服务器); 切换接入到另一个网络B, 无法访问IDC服务器, 但此时在网络B的主机访问其他的Internet服务并无问题 主机wifi首先接入网络B, 一切没问题; 切换接入到一个网络A, 一切没问题; 再切回到网络B,">
-<meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-04-11T05:58:38.368Z">
+<meta property="article:published_time" content="2015-08-23T04:57:27.000Z">
+<meta property="article:modified_time" content="2018-04-11T05:58:38.368Z">
+<meta property="article:author" content="CJey">
+<meta property="article:tag" content="有趣">
+<meta property="article:tag" content="疑难杂症">
+<meta property="article:tag" content="恍然大悟">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="记一次网络诊断 - 切换wifi后主机无法访问服务器">
-<meta name="twitter:description" content="背景公司研发的硬件, 运行自行定制的Android ROM(基于AOSP 4.4), 偶尔会发生一个怪异的网络问题  主机wifi首先接入当前网络A, 一切没问题(可以访问IDC服务器); 切换接入到另一个网络B, 无法访问IDC服务器, 但此时在网络B的主机访问其他的Internet服务并无问题 主机wifi首先接入网络B, 一切没问题; 切换接入到一个网络A, 一切没问题; 再切回到网络B,">
 
 
 
@@ -112,7 +113,7 @@
 </script>
 
   <title> 记一次网络诊断 - 切换wifi后主机无法访问服务器 | 不思鱼 </title>
-</head>
+<meta name="generator" content="Hexo 4.2.0"></head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
 
@@ -275,7 +276,7 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/网络/" itemprop="url" rel="index">
+                  <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index">
                     <span itemprop="name">网络</span>
                   </a>
                 </span>
@@ -287,7 +288,7 @@
 
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/网络/网络层/" itemprop="url" rel="index">
+                  <a href="/categories/%E7%BD%91%E7%BB%9C/%E7%BD%91%E7%BB%9C%E5%B1%82/" itemprop="url" rel="index">
                     <span itemprop="name">网络层</span>
                   </a>
                 </span>
@@ -400,11 +401,11 @@
       
         <div class="post-tags">
           
-            <a href="/tags/有趣/" rel="tag">#有趣</a>
+            <a href="/tags/%E6%9C%89%E8%B6%A3/" rel="tag">#有趣</a>
           
-            <a href="/tags/疑难杂症/" rel="tag">#疑难杂症</a>
+            <a href="/tags/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/" rel="tag">#疑难杂症</a>
           
-            <a href="/tags/恍然大悟/" rel="tag">#恍然大悟</a>
+            <a href="/tags/%E6%81%8D%E7%84%B6%E5%A4%A7%E6%82%9F/" rel="tag">#恍然大悟</a>
           
         </div>
       
@@ -420,10 +421,6 @@
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/posts/talkischeap/" rel="prev" title="好为人师">
-                好为人师 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -491,7 +488,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives/">
-              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-count">3</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -499,7 +496,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories/">
-                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-count">4</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -508,7 +505,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags/">
-                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -573,7 +570,7 @@
         <div class="copyright" >
   
   &copy;  2015 - 
-  <span itemprop="copyrightYear">2018</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -581,12 +578,12 @@
 </div>
 
 <div class="powered-by">
-  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+  由 <a class="theme-link" href="http://hexo.io" target="_blank" rel="noopener">Hexo</a> 强力驱动
 </div>
 
 <div class="theme-info">
   主题 -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">
     NexT.Mist
   </a>
 </div>
