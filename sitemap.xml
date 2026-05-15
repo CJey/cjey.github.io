@@ -2,6 +2,24 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://cjey.me/posts/talkischeap/</loc>
+    
+    <lastmod>2026-05-15</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://cjey.me/posts/icmpredirect/</loc>
+    
+    <lastmod>2026-05-15</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://cjey.me/posts/wifisecurity/</loc>
     
     <lastmod>2026-05-15</lastmod>
@@ -14,15 +32,6 @@
     <loc>https://cjey.me/posts/smartconfig/</loc>
     
     <lastmod>2026-05-15</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://cjey.me/posts/icmpredirect/</loc>
-    
-    <lastmod>2024-08-31</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -74,6 +83,27 @@
 
   
   <url>
+    <loc>https://cjey.me/tags/%E6%9C%89%E8%B6%A3/</loc>
+    <lastmod>2026-05-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://cjey.me/tags/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/</loc>
+    <lastmod>2026-05-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://cjey.me/tags/%E6%81%8D%E7%84%B6%E5%A4%A7%E6%82%9F/</loc>
+    <lastmod>2026-05-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://cjey.me/tags/%E7%BD%91%E7%BB%9C/</loc>
     <lastmod>2026-05-15</lastmod>
     <changefreq>weekly</changefreq>
@@ -102,13 +132,6 @@
   </url>
   
   <url>
-    <loc>https://cjey.me/tags/%E6%9C%89%E8%B6%A3/</loc>
-    <lastmod>2026-05-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://cjey.me/tags/%E5%8A%A0%E5%AF%86/</loc>
     <lastmod>2026-05-15</lastmod>
     <changefreq>weekly</changefreq>
@@ -122,31 +145,17 @@
     <priority>0.2</priority>
   </url>
   
-  <url>
-    <loc>https://cjey.me/tags/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/</loc>
-    <lastmod>2026-05-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://cjey.me/tags/%E6%81%8D%E7%84%B6%E5%A4%A7%E6%82%9F/</loc>
-    <lastmod>2026-05-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
 
   
   <url>
-    <loc>https://cjey.me/categories/%E7%BA%B8%E4%B8%8A%E8%B0%88%E5%85%B5/</loc>
+    <loc>https://cjey.me/categories/%E7%BD%91%E7%BB%9C/</loc>
     <lastmod>2026-05-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://cjey.me/categories/%E7%BD%91%E7%BB%9C/</loc>
+    <loc>https://cjey.me/categories/%E7%BA%B8%E4%B8%8A%E8%B0%88%E5%85%B5/</loc>
     <lastmod>2026-05-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
