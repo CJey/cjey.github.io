@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <author>
+    <name>CJey</name>
+  </author>
+  <generator uri="https://hexo.io/">Hexo</generator>
+  <id>https://cjey.me/</id>
+  <link href="https://cjey.me/" rel="alternate"/>
+  <link href="https://cjey.me/atom.xml" rel="self"/>
+  <rights>All rights reserved 2026, CJey</rights>
+  <subtitle>记录对行业的理解, 对技术的理解, 解决问题的思路, 新奇想法的分享</subtitle>
+  <title>不思鱼</title>
+  <updated>2024-08-31T07:32:28.641Z</updated>
+  <entry>
+    <author>
+      <name>CJey</name>
+    </author>
+    <category term="网络" scheme="https://cjey.me/categories/%E7%BD%91%E7%BB%9C/"/>
+    <category term="网络层" scheme="https://cjey.me/categories/%E7%BD%91%E7%BB%9C/%E7%BD%91%E7%BB%9C%E5%B1%82/"/>
+    <category term="有趣" scheme="https://cjey.me/tags/%E6%9C%89%E8%B6%A3/"/>
+    <category term="疑难杂症" scheme="https://cjey.me/tags/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/"/>
+    <category term="恍然大悟" scheme="https://cjey.me/tags/%E6%81%8D%E7%84%B6%E5%A4%A7%E6%82%9F/"/>
+    <content>
+      <![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>公司研发的硬件, 运行自行定制的Android ROM(基于AOSP 4.4), 偶尔会发生一个怪异的网络问题</p><ul><li>主机wifi首先接入当前网络A, 一切没问题(可以访问IDC服务器); 切换接入到另一个网络B, 无法访问IDC服务器, 但此时在网络B的主机访问其他的Internet服务并无问题</li><li>主机wifi首先接入网络B, 一切没问题; 切换接入到一个网络A, 一切没问题; 再切回到网络B, 无法访问IDC服务器, 访问其他Internet服务并无问题</li></ul><p>这个问题在办公室环境下发生频率较高(但并非100%), 也有部分客户会抱怨切换网络后不能访问服务器</p><p>公司网络A的结构不同于一般家用网络, 默认网关和对外的出口路由器并不是同一台设备, 结构示意如下</p><blockquote><p>DHCP<br>Network: 192.168.0.0&#x2F;24<br>Gateway: 192.168.0.1, 负责公司内部各网络间的数据交换<br>DNS: 192.168.0.201<br>Router: 192.168.0.254, 负责提供Internet接入</p></blockquote><p>先说原因&#x2F;结论: <strong>主机的ROM不能正确释放由ICMP Redirect报文控制生成的临时路由</strong></p><p>下文都是一些分析流水, 如果你有些网络经验的话, 应该可以不用继续往下看了</p><span id="more"></span><h1 id="初次排查"><a href="#初次排查" class="headerlink" title="初次排查"></a>初次排查</h1><p>刚发生这个问题的时候, 大家都很困惑, 因为除了主机外, 其他的设备全部没有这个问题(手机, 平板, PC), 自然会认为问题是出在主机上, 不过因为在客户手上的机器并没怎么出现过这个问题, 所以, 公司内部测试的时候会避免这个问题</p><p>随着业务规模扩大, 主机遭遇的网络环境各种各样, 有更多的客户反馈这个问题, 于是在一个周末, 几个同事一起分析这个问题</p><ol><li>起初, 我们怀疑是DNS被劫持, 但在不同网络下ping IDC服务器可以看得到dns解析没问题</li><li>奇怪的是, 在A网络下直接ping IDC的IP可以ping通, 切换到B网络下却一直提示unreachable</li><li>而同样的, 在A网络下ping baidu.com可以ping通, 切换到B网络下也仍能ping通baidu.com, 仔细观察了一下发现, baidu.com做了dns balance, 所以测试中先后两次其实ping的是不同的IP</li><li>A网络下选定一个baidu的IP直接ping可以ping通, 切换到B网络下也仍能ping通, 这下就很头疼了, 因为就IDC的IP无法ping通</li><li>重复了一次4, 这次发现baidu的IP和IDC的IP一个表现, B网络下也不能ping通</li><li>翻看Linux的路由表, 并没有什么特别</li><li>大家都陷入了沉思…</li><li>重复测试了几遍, 结果和第一次没什么差别, IDC的IP表现一直一致, baidu的IP一会正常一会儿不正常</li><li>引入新的网络C, 在网络B和网络C之间反复切换多次对比测试, 一切都正常</li><li>有十几年经验的IT经理做了一个较合理的猜想: Linux自己控制着一张隐藏的路由表, 主机因为某个bug, 在切换网络时, 隐藏的路由表没有同步更新, 导致同样的IP在不同的网络下不能正确寻路</li><li>最后的结论是: 公司的网络架构较一般环境复杂, 通常情况下不会有客户会处在这么复杂的架构下, 如果发生了这种情况, 尽可能帮助客户简化网络复杂度</li></ol><p>虽然这次分析并没有找到真正的原因, 但是IT经理的猜想对我产生挺大冲击的</p><p>因为在我看来, <strong>操作系统该做的是维护和管理好资源, 对用户提供抽象的高级管理接口</strong></p><p>就路由而言, 理当遵照我们所看到的路由表那样去工作, 怎么会偷偷搞一张用户无法控制的隐藏路由表呢?</p><p>可是, 只有这个解释最符合问题表现和大家的认知, 但是我也因此而困惑</p><p>不过后来的某一天, 在一篇讲述Linux下策略路由的文章中了解到, Linux下有255张路由表, 普通的路由指令显示的只是其中一张较低优先级的默认路由表而已, 突然, 我几乎就信了, 只要查出出问题的那张路由表不就可以解决这个网络问题吗!</p><p>这时, 我突然特别佩服IT经理, 能大胆的做出这么一个事实正确的猜想</p><p>不过, 进展仍然止步于此, 因为之后我们没有再去讨论这个问题, 我也没再去分析出问题的主机网络状况</p><h1 id="问题再现"><a href="#问题再现" class="headerlink" title="问题再现"></a>问题再现</h1><p>最近仍有客户反馈这个问题, 在上周, 硬件部和IT部一起重新搭建一个网络环境, 用来调查这个问题, 因为硬件部担心问题可能是出在wifi芯片上</p><p>当时IT的同事找到正在码代码的我(我并不清楚他们在做什么测试), 向我咨询一个奇怪的问题, 描述如下</p><p>主机接入新网络X, 一切正常, 切换到公司网络A, 一切正常, 切换回网络X, 不能ping通网络X中的网关<br>而此时, 接入网络X的手机, 并没有异常, 可以ping通网关, 诡异的是, 居然也能ping通主机</p><p>一开始听到这个描述, 我直接摇头否认这个问题的描述, 因为, 我认为, 同在一个简单链路内, 没有理由不能相互ping通(没有防火墙), 更何况问题发生时, 主机和手机之间是可以相互ping通的, 而wifi环境下所以数据包都需要经过AP中转, 而AP同时也是路由器, 没理由数据包能被路由转发到其他设备, 但路由自己却收不到</p><p>可是, 当我坐在主机前, 做了一些验证后, 我惊呆了, 居然真的不能ping通网关, 要知道, 在同一个链路内, 数据之间的传递可以完全只依赖自己的网卡就能完成</p><h1 id="最终分析"><a href="#最终分析" class="headerlink" title="最终分析"></a>最终分析</h1><p>查看路由表, 切换网络前后的路由表都看不出异常, 这时我突然想起来查一下”隐藏的路由表”, 可是最后翻遍所有的路由表, 发现没有任何异常, 看来上一次的分析结论和Linux的255张路由表没有关系</p><p>没有什么头绪, 抓包吧, 一边ping网关, 一边tcpdump抓包, 终于! 露出马脚了!</p><p>网络X的网关是192.168.1.1, 网络A的网关是192.168.0.1, 网络A的出口路由是192.168.0.204</p><p>当我接入在网络X下, ping着网络X的网关时, tpcudmp抓包却看到系统一直在广播ARP查找192.168.0.204这个IP, 明明切换了网络, 192.168.0.204根本就不再出现网络X上, 而这个IP又正是网络A的出口路由(非网关), 这一定不是巧合!</p><p>重启主机, 从没接入任何网络时就开始就抓包, 抓住整个测试过程中的所有包, 看能否找出原因</p><ol><li>在初次接入网络X的情况下, 没有发现异常</li><li>切换到网络A下, 果然, 频繁收到ICMP的重定向包, 指示相关的IP访问可以由192.168.0.204转发完成, 注意, 这里的重定向不仅仅只有公司的API服务器IP, 还有网络X的网关192.168.1.1(由于接入过网络X, 某些应用可能抓取了X下的网关做网络连通性测试用途)</li><li>切换回网络X, 重新ping网关, 真的ping不通了, 而且抓到的全部都是探寻IP地址192.168.0.204的ARP数据包</li></ol><p>不过, 找来更多的机器试图重现这个问题, 却发现这问题并不能完全重现, 继续分析了一下, 原因在于路由器发送ICMP重定向包的存在一个不污染网络的策略, 存在一个频率限制, 外部看起来呈现一定的随机性, 针对这个小问题, 在网络A的网关上人为伪造ICMP重定向包每3秒发送一次, 最终做到了所有机器全部可以重现问题</p><h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p>很简单, 调整内核参数, 忽略所有ICMP重定向包</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">net.ipv4.conf.default.accept_redirects = 0</span><br><span class="line">net.ipv4.conf.all.accept_redirects = 0</span><br></pre></td></tr></table></figure><p>PS: 尽管问题出现在ROM本身, 但是最终没能查到原因</p>]]>
+    </content>
+    <id>https://cjey.me/posts/icmpredirect/</id>
+    <link href="https://cjey.me/posts/icmpredirect/"/>
+    <published>2015-08-23T04:57:27.000Z</published>
+    <summary>
+      <![CDATA[<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>公司研发的硬件, 运行自行定制的Android ROM(基于AOSP 4.4), 偶尔会发生一个怪异的网络问题</p>
+<ul>
+<li>主机wifi首先接入当前网络A, 一切没问题(可以访问IDC服务器); 切换接入到另一个网络B, 无法访问IDC服务器, 但此时在网络B的主机访问其他的Internet服务并无问题</li>
+<li>主机wifi首先接入网络B, 一切没问题; 切换接入到一个网络A, 一切没问题; 再切回到网络B, 无法访问IDC服务器, 访问其他Internet服务并无问题</li>
+</ul>
+<p>这个问题在办公室环境下发生频率较高(但并非100%), 也有部分客户会抱怨切换网络后不能访问服务器</p>
+<p>公司网络A的结构不同于一般家用网络, 默认网关和对外的出口路由器并不是同一台设备, 结构示意如下</p>
+<blockquote>
+<p>DHCP<br>Network: 192.168.0.0&#x2F;24<br>Gateway: 192.168.0.1, 负责公司内部各网络间的数据交换<br>DNS: 192.168.0.201<br>Router: 192.168.0.254, 负责提供Internet接入</p>
+</blockquote>
+<p>先说原因&#x2F;结论: <strong>主机的ROM不能正确释放由ICMP Redirect报文控制生成的临时路由</strong></p>
+<p>下文都是一些分析流水, 如果你有些网络经验的话, 应该可以不用继续往下看了</p>]]>
+    </summary>
+    <title>记一次网络诊断 - 切换wifi后主机无法访问服务器</title>
+    <updated>2024-08-31T07:32:28.641Z</updated>
+  </entry>
+  <entry>
+    <author>
+      <name>CJey</name>
+    </author>
+    <category term="网络" scheme="https://cjey.me/categories/%E7%BD%91%E7%BB%9C/"/>
+    <category term="链路层" scheme="https://cjey.me/categories/%E7%BD%91%E7%BB%9C/%E9%93%BE%E8%B7%AF%E5%B1%82/"/>
+    <category term="Wifi" scheme="https://cjey.me/tags/Wifi/"/>
+    <category term="加密" scheme="https://cjey.me/tags/%E5%8A%A0%E5%AF%86/"/>
+    <category term="安全" scheme="https://cjey.me/tags/%E5%AE%89%E5%85%A8/"/>
+    <content>
+      <![CDATA[<p>本文在于阐述我对 WiFi 网络中各站点之间加密方式的理解。</p><h2 id="提问"><a href="#提问" class="headerlink" title="提问"></a>提问</h2><p>此前，我有过这样一个疑惑：</p><p>wifi 的数据传输形式为广播，那么考虑一下，当 A 站发送数据给 B 站时</p><ol><li>如果 A 站和 B 站之间信号不直接可达，那么数据将会先由 A 站流往 AP（接入点&#x2F;基站&#x2F;路由器），再由 AP 流往 B 站，即靠 AP 做转发</li><li>如果 A 站和 B 站之间信号直接可达，数据广播出去后，AP 和 B 站都会收到这个数据，那么 B 站是直接接受还是抛弃？又由于 AP 并不知道 B 站是否已经接收，所以会坚持转发一次，如果 B 站直接接受了，岂不是会导致数据无条件重发？</li></ol><p>在理解了 wifi 的数据加密形式后，疑惑也被顺便解开了。</p><span id="more"></span><p>PS：说 wifi 其实不严谨，802.11 会更规范一点，不过为了方便理解，直接说 wifi 也无妨，因为不少读者可能不熟悉 802.11 和 wifi 的关系。</p><h2 id="共识"><a href="#共识" class="headerlink" title="共识"></a>共识</h2><p>行文开始前先做一些概念约束以及一些我的个人观点。</p><h3 id="模式限定"><a href="#模式限定" class="headerlink" title="模式限定"></a>模式限定</h3><p>探讨范围限定在 AP 模式，也就是最流行的 wifi 接入模式，不涉及 Ad-hoc 模式，简要的描述就是：</p><ul><li>有一个无线设备工作在 AP 模式，承担基站的角色（路由器）</li><li>其他所有的设备全部和基站建立无线链路（手机、平板、笔记本……接入 wifi）</li><li>所有站点之间的数据通信均通过基站进行转发，类似于 C&#x2F;S 模式</li><li>只要基站挂掉，所有站点之间将无法互相通信</li></ul><h3 id="通信数据安全"><a href="#通信数据安全" class="headerlink" title="通信数据安全"></a>通信数据安全</h3><p>一般而言，通信数据的加密手段不同于数据存储。对于数据存储，通常采用对称加密，且只用一把密钥；而通信数据的做法大致是这样的：</p><ul><li>通信双方共享一把长期的主密钥 K</li><li>通信双方基于 K 做一次安全握手，派生出一把当前会话使用的密钥 k</li><li>接下来的通信均使用 k 加密</li><li>每隔一定时间，双方重新派生出一把新的会话密钥 k2，替换 k，继续后续通信</li></ul><p>这样做的好处有两点：</p><ul><li><strong>密钥分离</strong>：会话密钥 k 即便泄露也不会牵连主密钥 K，反过来主密钥被攻破之前的历史会话也不会因为一把 k 的泄露而全军覆没</li><li><strong>密钥新鲜度</strong>：同一把密钥加密的样本越多，越有利于密码分析。即便算法本身没被破，定期轮换密钥也能提高整体的安全性</li></ul><h3 id="广播报文与广播链路"><a href="#广播报文与广播链路" class="headerlink" title="广播报文与广播链路"></a>广播报文与广播链路</h3><p>在广播式链路上发送广播报文具有得天独厚的优势：</p><ul><li>古老的集线器也是广播式链路，某站点要发送一个广播报文，集线器不需要任何处理，只需要把广播报文当成普通报文广播即可</li><li>交换机将集线器的广播式链路改成了点对点链路，某站点要发送一个广播报文，交换机只能将该报文从每一个端口发送一次</li><li>wifi 使用无线电通讯，自然也是广播链路，因此，某站点要发送一个广播报文，AP 只需要发送一次数据即可，无需将广播报文挨个站点发送一次</li></ul><h2 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h2><p>大致流程如下（忽略广播）：</p><ol><li>AP 和站点之间共享相同的初始密钥 PMK（Pairwise Master Key），关于 PMK 的来源后文会给出</li><li>每当有站点请求接入 AP，AP 和站点之间就会通过 PMK 生成出一把正式传输数据用到的密钥 PTK（Pairwise Transient Key）</li><li>AP 和站点之间的通讯全部使用 PTK 加密</li></ol><p>如果稍加留意，你会发现，每个站点和 AP 之间都维护着一个 PTK，但是站点和站点之间是不共享 PTK 的，站点 A 和 AP 之间的通讯使用 PTKa，站点 B 和 AP 之间的通讯使用 PTKb。</p><p>因此，站点 A 是没有能力和站点 B 直接通讯的，必须经由 AP 做数据转发，也就是说，即使站点 B 接收到了站点 A 发出的帧中白纸黑字写着”接收方为站点 B”，站点 B 也不得不抛弃，因为帧中的载荷数据是使用 PTKa 加密的，而站点 B 并不知道 PTKa，只能等待 AP 解析此帧，并换用 PTKb 加密后重新发送一个新帧，站点 B 才可以看见来自站点 A 的数据。</p><p>换言之，PTK 的方式保证了站点和站点之间在链路上是 “隔离” 的，任何站点都无法嗅探到不是发送给它的数据。</p><p>接下来谈谈数据的广播，如果站点 A 需要发送 IP 广播，单借助 PTK，也是可以做到的：站点 A 将广播包发送给 AP，AP 再将广播包重新编码逐个发给所有接入的站点，但这种做法太愚蠢，现实的流程如下：</p><ol><li>AP 启动后生成一个随机初始密钥 GMK（Group Master Key）</li><li>AP 使用 GMK 通过某种算法，衍生出一个用于加密广播&#x2F;组播数据的密钥 GTK</li><li>每个接入 AP 的站点在得到了 PTK 后，AP 将 GTK 使用 PTK 加密后发送给站点</li></ol><p>换言之，所有站点都持有相同的 GTK，那么站点发送 IP 广播的流程究竟是怎么样的呢？最容易想到的有两种。</p><p>第一种，站点直接通过 GTK 进行广播：</p><ol><li>站点 A 使用 GTK 加密广播包并发送</li><li>站点 B 接收到从站点 A 发出的广播包</li><li>站点 C 离 A 较远，没能收到从站点 A 发出的广播包</li><li>AP 收到了从站点 A 发出的广播包，然后做一次接力转发</li><li>所有站点接收到从 AP 转发的广播包</li></ol><p>第二种，由 AP 通过 GTK 进行广播：</p><ol><li>站点 A 使用 PTKa 加密广播包并发送</li><li>AP 接收到从站点 A 发出的广播包</li><li>AP 解码接收到的广播包，并使用 GTK 加密该广播包，再接力转发出去</li><li>所有站点接收到该 AP 转发的广播包</li></ol><p>不难看出，第二种方式是最优的，因为模式简单且和单播方式统一，而且第一种方式会造成站点重复接收广播包。事实上也的确采用的第二种方式。所以，GTK 对于站点来说，只用于解密，对于 AP 来说，只用于加密。</p><p>总结：<strong>wifi 网络内的所有站点间的所有通信都必须交给 AP 转发，站点和站点之间不存在任何直接通信行为。</strong></p><h2 id="关于-PMK"><a href="#关于-PMK" class="headerlink" title="关于 PMK"></a>关于 PMK</h2><p>PMK 是怎么来的呢？</p><p>简单的说，接入 wifi 时需要你填的那个密码被称之为 PSK（Pre-Shared Key），将 PSK 使用一套算法进行一次转换，就是所谓的 PMK 了。</p><p>当然，PMK 不仅仅可以通过 PSK 得到，如果 wifi 使用 802.1X 的企业级证书认证方式（民用 wifi 很少支持这种认证方式），那么，PMK 就是标准的非对称密钥生成的对称密钥。</p><h2 id="关于-GMK"><a href="#关于-GMK" class="headerlink" title="关于 GMK"></a>关于 GMK</h2><p>此前我认为：GMK 可能只是为了和 PMK 概念对称，实际使用中，感觉完全没有存在的必要，AP 每次都生成一个随机串作为 GTK 就可以了。</p><p>如今我认为：GMK 的存在是为了方便 GTK 的周期性轮换——比如有站点退出网络时，应当更换 GTK 让退出的站点无法继续解密后续的广播数据，由 GMK 经过派生算出新 GTK，比每次都重新生成随机串要更轻量、可控。GMK 是某个 AP 自己内部的事，并不在多个 AP 之间共享。</p>]]>
+    </content>
+    <id>https://cjey.me/posts/wifisecurity/</id>
+    <link href="https://cjey.me/posts/wifisecurity/"/>
+    <published>2015-06-15T11:37:07.000Z</published>
+    <summary>
+      <![CDATA[<p>本文在于阐述我对 WiFi 网络中各站点之间加密方式的理解。</p>
+<h2 id="提问"><a href="#提问" class="headerlink" title="提问"></a>提问</h2><p>此前，我有过这样一个疑惑：</p>
+<p>wifi 的数据传输形式为广播，那么考虑一下，当 A 站发送数据给 B 站时</p>
+<ol>
+<li>如果 A 站和 B 站之间信号不直接可达，那么数据将会先由 A 站流往 AP（接入点&#x2F;基站&#x2F;路由器），再由 AP 流往 B 站，即靠 AP 做转发</li>
+<li>如果 A 站和 B 站之间信号直接可达，数据广播出去后，AP 和 B 站都会收到这个数据，那么 B 站是直接接受还是抛弃？又由于 AP 并不知道 B 站是否已经接收，所以会坚持转发一次，如果 B 站直接接受了，岂不是会导致数据无条件重发？</li>
+</ol>
+<p>在理解了 wifi 的数据加密形式后，疑惑也被顺便解开了。</p>]]>
+    </summary>
+    <title>WiFi 数据加密的形式</title>
+    <updated>2026-05-15T10:03:12.248Z</updated>
+  </entry>
+  <entry>
+    <author>
+      <name>CJey</name>
+    </author>
+    <category term="纸上谈兵" scheme="https://cjey.me/categories/%E7%BA%B8%E4%B8%8A%E8%B0%88%E5%85%B5/"/>
+    <category term="网络" scheme="https://cjey.me/tags/%E7%BD%91%E7%BB%9C/"/>
+    <category term="SmartConfig" scheme="https://cjey.me/tags/SmartConfig/"/>
+    <category term="Wifi" scheme="https://cjey.me/tags/Wifi/"/>
+    <category term="通信" scheme="https://cjey.me/tags/%E9%80%9A%E4%BF%A1/"/>
+    <category term="有趣" scheme="https://cjey.me/tags/%E6%9C%89%E8%B6%A3/"/>
+    <content>
+      <![CDATA[<p>一次偶然见识了一台无线监控设备的网络接入方式，从而了解到了 SmartConfig 技术。<br>本文在于阐述我对 SmartConfig 这一技术的理解。</p><h2 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h2><p>简单来说，这是一种让你可以在没有和其他设备（支持 SmartConfig 技术）建立任何性质的通讯链路的情况下，配置该设备接入 wifi 网络。</p><p>虚构一个实际场景的话，会是这样：</p><p>你购买了一个带有 wifi 的摄像头，不过这个摄像头没有 USB、没有以太网、没有蓝牙、没有 NFC，GSM 就更不可能了，只有 wifi，那么问题来了：<br>你如何配置这个摄像头接入你家的 wifi？<br>乍一想，没有数据链路，如何进行数据交换？<br>对的，SmartConfig 就是用在这种场景下的，如果这个摄像头的 wifi 支持 SmartConfig 技术，那么你只需这样几个步骤：</p><ol><li>摄像头插上电源</li><li>安装制造商提供的手机 app（应用无需任何特殊权限，只需要手机当前是接入 wifi 的）</li><li>在摄像头附近打开 app，输入你家 wifi 的密码，点击确认，稍等片刻，不出意外的话，摄像头已经接入你家 wifi 了</li></ol><p>这项技术由德州仪器提出，并且应用在自己的 CC3000 系列芯片上。不过，从原理上来说，支持混杂模式的 wifi 芯片都可以应用该技术。</p><span id="more"></span><h2 id="猜想"><a href="#猜想" class="headerlink" title="猜想"></a>猜想</h2><p>首先，你可能会联想到是不是这个 app 控制了手机，让手机主动接入摄像头的 wifi 网络，然后交换数据。这确实是一个行得通的办法，但是却不实用，控制操作系统更换当前的网络连接是敏感操作，普通的 app 没这个权限，那么就需要用户参与其中，对于一般的用户而言，这样的流程就显得复杂且难以理解了。</p><p>这样看来，摄像头并没有和你控制的任何一个设备建立任何性质的连接。</p><p>一般来说，我们潜意识里会默认通讯都是双向的，用这个习惯来看待 SmartConfig，会觉得匪夷所思。</p><p>其实，在这种场景下，我们只需要<strong>能够把 wifi 的名称和密码告诉摄像头</strong>就行了，摄像头有没有回馈并不重要。</p><p>顺着这个思路，我们发现可以这么做，手机 app 上生成一个包含 wifi 名称和密码的二维码，然后放置在摄像头前，摄像头只要识别了二维码自然就可以接入 wifi。<br>但是，扫二维码的方式依赖视频信号输入，并不是通用的手段（因为现实场景中的设备并不都是摄像头），而且场景里也没有采用这种做法。</p><p>这么分析下来，传播 wifi 信息的渠道只可能是 wifi 本身了。<br>摄像头尚未接入 wifi，况且 wifi 通信本身也是加密的，app 并没有能力控制 wifi 的底层通讯，app 又是如何将信息成功透露给摄像头的？</p><h2 id="共识"><a href="#共识" class="headerlink" title="共识"></a>共识</h2><p>理解 SmartConfig 原理前，先约定两个我总结的观点，作为下文的共识。</p><p>其一</p><blockquote><p>无线数据的传播形式必定是广播</p></blockquote><p>至少目前我们普及应用的无线通信，物理上都是电磁波的扩散辐射，本质就是广播；即便是定向天线、红外、激光对射这类窄波束传输，也只是收窄了辐射的张角，并不能精确投递到唯一的接收点。</p><p>既然是广播，那么必然可以被监听，就像一个酒吧里有两个中国人和两个俄罗斯人，中国人和中国人说话，俄罗斯人听得到，只不过听不懂，反之亦然。</p><p>其二</p><blockquote><p>任何可控的模式都可以被用于编码，用于数据交换</p></blockquote><p>目前 wifi 常用的几种加密方式都存在一个特点，明文的长度和加密后的密文长度之间是线性关系。</p><p>即：密文长度 &#x3D; 明文长度 + 算法相关的常量 C，也就是说，只要明文长度可控，密文的长度即是可控的。</p><p>这个特点是 SmartConfig 的核心原理。</p><h2 id="技术原理"><a href="#技术原理" class="headerlink" title="技术原理"></a>技术原理</h2><p>如果了解 802.11 的帧格式，你就知道，每一个 802.11 数据帧的边界和大小在物理层抓包时是清晰可见的——尽管 WPA&#x2F;WPA2 下载荷（即 IP&#x2F;UDP&#x2F;应用层数据）已经被加密为密文，但帧的长度本身并未被隐藏，只要接收到 802.11 帧就可以立刻得到这个长度。</p><p>常见的两种数据帧格式：</p><p><img src="/posts/smartconfig/station_to_ap.jpg" alt="Station to AP 帧格式"></p><p><img src="/posts/smartconfig/ap_to_station.jpg" alt="AP to Station 帧格式"></p><p>密文长度有了，接下来我们看一下明文的结构。</p><p>普通权限的应用程序是没有能力完全控制和定义传输层及下层所有协议数据的，唯一可以完全控制的就是应用层数据，那就继续分析一下 TCP&#x2F;IP 协议栈中的网络层和传输层的数据结构。</p><p>常用的网络层协议非 IPv4 莫属，IPv4 的头部绝大多数情况下都是定长的 20 字节，<strong>长度几乎完全可控</strong>。</p><p>传输层我们选择 UDP，因为 UDP 协议头部为定长的 8 字节，<strong>完全可控</strong>（选择 UDP 还有别的原因：免连接，不需要三次握手；原生支持广播；不会被 TCP 的重传&#x2F;拥塞控制机制干扰发包节奏）。</p><p>这么看来，我们有能力完全控制明文的长度。</p><p><code>明文长度 = 20 + 8 + 应用层数据长度</code></p><p>密文长度也就跟着确定了：</p><p><code>密文长度 = 20 + 8 + 应用层数据长度 + 算法相关的常量 C</code></p><p>如果我需要你发出一个密文长度为 1000 字节的 802.11 帧，那么你只需要在 UDP 中塞满任意 (1000 - 20 - 8 - C) 个字节即可。</p><p>接下来，只要利用可控的密文长度定义一张编码表，就能将数据传递给任何持有这张编码表的设备。</p><p>原理说完了，依此即可实现几乎任意数据的传播，至于 SmartConfig 采用何种编码，这个则是技术的实现细节，本文不讨论。</p><h2 id="流程示例"><a href="#流程示例" class="headerlink" title="流程示例"></a>流程示例</h2><p>为了示意一下整个过程，我们简单定义一张编码表：</p><blockquote><p>密文长度 &#x3D;&gt; 映射释义</p><p>1234 &#x3D;&gt; 起始符；连续的 3 个起始符，用于表示数据传输开始</p><p>1324 &#x3D;&gt; 结束符；连续的 3 个结束符，用于表示数据传输结束</p><p>110 &#x3D;&gt; 间隔符；连续的 2 个间隔符，用于表示数据符之间的间隔</p><p>1000 &#x3D;&gt; 数据符；表示 ASCII 0x00</p><p>1001 &#x3D;&gt; 数据符；表示 ASCII 0x01</p><p>…</p><p>1127 &#x3D;&gt; 数据符；表示 ASCII 0x7F</p></blockquote><p>假设我们要把字符串 “CJey”（密码）告诉摄像头，整个流程大致如下（假设常量 C 为 16）：</p><p>手机 app 部分：</p><ol><li>打开手机 app，在输入框中填入要发送的字符串 “CJey”，点击发送</li><li>app 连续发送三个 UDP 广播包，填充数据为 1190 个 0x00 字节（1234 - 16 - 20 - 8 &#x3D; 1190），表示传输开始</li><li>app 发送一个 UDP 广播包，填充数据为 1023 个 0x00 字节（1067 - 16 - 20 - 8 &#x3D; 1023），传输字符 C</li><li>app 连续发送两个 UDP 广播包，填充数据为 66 个 0x00 字节（110 - 16 - 20 - 8 &#x3D; 66），表示数据间隔</li><li>app 发送一个 UDP 广播包，填充数据为 1030 个 0x00 字节（1074 - 16 - 20 - 8 &#x3D; 1030），传输字符 J</li><li>app 连续发送两个 UDP 广播包，填充数据为 66 个 0x00 字节（110 - 16 - 20 - 8 &#x3D; 66），表示数据间隔</li><li>app 发送一个 UDP 广播包，填充数据为 1057 个 0x00 字节（1101 - 16 - 20 - 8 &#x3D; 1057），传输字符 e</li><li>app 连续发送两个 UDP 广播包，填充数据为 66 个 0x00 字节（110 - 16 - 20 - 8 &#x3D; 66），表示数据间隔</li><li>app 发送一个 UDP 广播包，填充数据为 1077 个 0x00 字节（1121 - 16 - 20 - 8 &#x3D; 1077），传输字符 y</li><li>app 连续发送三个 UDP 广播包，填充数据为 1280 个 0x00 字节（1324 - 16 - 20 - 8 &#x3D; 1280），表示传输结束</li><li>从第 1 步开始循环多次，直到超时或者摄像头成功接入 wifi 后向 app 汇报成功</li></ol><p>摄像头部分：</p><ol><li>摄像头通电，没有可用的 wifi，进入混杂模式，开始监听信号覆盖范围内的所有 wifi 数据帧</li><li>捕获数据帧，如果连续收到 3 个密文长度为 1234，且来自于同一个发射源 X 的数据帧，则进入下一步，否则重复本步</li><li>捕获发射源 X 的数据帧，持续捕获密文长度为 110 或者 1000-1127 之间的数据帧，直到捕获到连续 3 个密文长度为 1324 的数据帧</li><li>将上述数据帧按照编码表进行映射，由于手机 app 并非是独占网络，所以捕获到的数据可能有噪音，比如解码出来的结果可能是这样（<code>/</code> 表示数据间隔）：<code>ACX/J/o@e/ymmm</code></li><li>如果结果无歧义，记为候选 R；否则继续重复捕获 X，将新一轮的结果与既有结果取交集，循环直到收敛出唯一的 R</li><li>拿候选 R 进行二次验证：再捕获一轮 X，若与 R 一致则视为接收完成；否则回到第 5 步继续收敛</li><li>由于捕获的数据帧头部信息中已经包含了 wifi 的 BSSID 信息，使用 “CJey” 作为密码去尝试连接相应的 wifi，成功则向 app 报告，失败则回到第 2 步重新监听</li></ol><h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://processors.wiki.ti.com/index.php/CC3000_Smart_Config">SmartConfig的TI官方wiki</a><br><a href="http://www.ti.com/tool/smartconfig">SmartConfig的TI官方介绍</a><br><a href="http://depletionregion.blogspot.ch/2013/10/cc3000-smart-config-transmitting-ssid.html">CC3000 Smart Config - transmitting SSID and keyphrase</a><br><a href="http://electronics.stackexchange.com/questions/61704/how-does-ti-cc3000-wifi-smart-config-work">How does TI CC3000 wifi smart config work?</a></p>]]>
+    </content>
+    <id>https://cjey.me/posts/smartconfig/</id>
+    <link href="https://cjey.me/posts/smartconfig/"/>
+    <published>2015-06-14T18:39:57.000Z</published>
+    <summary>
+      <![CDATA[<p>一次偶然见识了一台无线监控设备的网络接入方式，从而了解到了 SmartConfig 技术。<br>本文在于阐述我对 SmartConfig 这一技术的理解。</p>
+<h2 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h2><p>简单来说，这是一种让你可以在没有和其他设备（支持 SmartConfig 技术）建立任何性质的通讯链路的情况下，配置该设备接入 wifi 网络。</p>
+<p>虚构一个实际场景的话，会是这样：</p>
+<p>你购买了一个带有 wifi 的摄像头，不过这个摄像头没有 USB、没有以太网、没有蓝牙、没有 NFC，GSM 就更不可能了，只有 wifi，那么问题来了：<br>你如何配置这个摄像头接入你家的 wifi？<br>乍一想，没有数据链路，如何进行数据交换？<br>对的，SmartConfig 就是用在这种场景下的，如果这个摄像头的 wifi 支持 SmartConfig 技术，那么你只需这样几个步骤：</p>
+<ol>
+<li>摄像头插上电源</li>
+<li>安装制造商提供的手机 app（应用无需任何特殊权限，只需要手机当前是接入 wifi 的）</li>
+<li>在摄像头附近打开 app，输入你家 wifi 的密码，点击确认，稍等片刻，不出意外的话，摄像头已经接入你家 wifi 了</li>
+</ol>
+<p>这项技术由德州仪器提出，并且应用在自己的 CC3000 系列芯片上。不过，从原理上来说，支持混杂模式的 wifi 芯片都可以应用该技术。</p>]]>
+    </summary>
+    <title>Smart Config 技术原理</title>
+    <updated>2026-05-15T09:54:51.352Z</updated>
+  </entry>
+</feed>

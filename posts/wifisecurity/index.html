@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"cjey.me","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"right","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="本文在于阐述我对WiFi网络中各站点之间加密方式的理解 提问此前, 我有过这样一个疑惑: wifi的数据传输形式为广播, 那么考虑一下, 当A站发送数据给B站时  如果A站和B站之间信号不直接可达, 那么数据将会先由A站流往AP(接入点&#x2F;基站&#x2F;路由器), 再由AP流往B站, 即靠AP做转发 如果A站和B站之间信号直接可达, 数据广播出去后, AP和B站都会收到这个数据, 那么B">
+    <meta name="description" content="本文在于阐述我对 WiFi 网络中各站点之间加密方式的理解。 提问此前，我有过这样一个疑惑： wifi 的数据传输形式为广播，那么考虑一下，当 A 站发送数据给 B 站时  如果 A 站和 B 站之间信号不直接可达，那么数据将会先由 A 站流往 AP（接入点&#x2F;基站&#x2F;路由器），再由 AP 流往 B 站，即靠 AP 做转发 如果 A 站和 B 站之间信号直接可达，数据广播出去后，A">
 <meta property="og:type" content="article">
 <meta property="og:title" content="WiFi 数据加密的形式">
 <meta property="og:url" content="https://cjey.me/posts/wifisecurity/index.html">
 <meta property="og:site_name" content="不思鱼">
-<meta property="og:description" content="本文在于阐述我对WiFi网络中各站点之间加密方式的理解 提问此前, 我有过这样一个疑惑: wifi的数据传输形式为广播, 那么考虑一下, 当A站发送数据给B站时  如果A站和B站之间信号不直接可达, 那么数据将会先由A站流往AP(接入点&#x2F;基站&#x2F;路由器), 再由AP流往B站, 即靠AP做转发 如果A站和B站之间信号直接可达, 数据广播出去后, AP和B站都会收到这个数据, 那么B">
+<meta property="og:description" content="本文在于阐述我对 WiFi 网络中各站点之间加密方式的理解。 提问此前，我有过这样一个疑惑： wifi 的数据传输形式为广播，那么考虑一下，当 A 站发送数据给 B 站时  如果 A 站和 B 站之间信号不直接可达，那么数据将会先由 A 站流往 AP（接入点&#x2F;基站&#x2F;路由器），再由 AP 流往 B 站，即靠 AP 做转发 如果 A 站和 B 站之间信号直接可达，数据广播出去后，A">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2015-06-15T11:37:07.000Z">
-<meta property="article:modified_time" content="2024-08-31T07:32:28.641Z">
+<meta property="article:modified_time" content="2026-05-15T10:03:12.248Z">
 <meta property="article:author" content="CJey">
 <meta property="article:tag" content="Wifi">
 <meta property="article:tag" content="加密">
@@ -74,6 +74,7 @@
   <noscript>
     <link rel="stylesheet" href="/css/noscript.css">
   </noscript>
+<link rel="alternate" href="/atom.xml" title="不思鱼" type="application/atom+xml">
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
@@ -133,7 +134,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8F%90%E9%97%AE"><span class="nav-number">1.</span> <span class="nav-text">提问</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B1%E8%AF%86"><span class="nav-number">2.</span> <span class="nav-text">共识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%BC%8F%E9%99%90%E5%AE%9A"><span class="nav-number">2.1.</span> <span class="nav-text">模式限定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E4%BF%A1%E6%95%B0%E6%8D%AE%E5%AE%89%E5%85%A8"><span class="nav-number">2.2.</span> <span class="nav-text">通信数据安全</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%BF%E6%92%AD%E6%8A%A5%E6%96%87%E4%B8%8E%E5%B9%BF%E6%92%AD%E9%93%BE%E8%B7%AF"><span class="nav-number">2.3.</span> <span class="nav-text">广播报文与广播链路</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B5%81%E7%A8%8B"><span class="nav-number">3.</span> <span class="nav-text">流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E4%BA%8EPMK"><span class="nav-number">4.</span> <span class="nav-text">关于PMK</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E4%BA%8EGMK"><span class="nav-number">5.</span> <span class="nav-text">关于GMK</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%90%E9%97%AE"><span class="nav-number">1.</span> <span class="nav-text">提问</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B1%E8%AF%86"><span class="nav-number">2.</span> <span class="nav-text">共识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%BC%8F%E9%99%90%E5%AE%9A"><span class="nav-number">2.1.</span> <span class="nav-text">模式限定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E4%BF%A1%E6%95%B0%E6%8D%AE%E5%AE%89%E5%85%A8"><span class="nav-number">2.2.</span> <span class="nav-text">通信数据安全</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%BF%E6%92%AD%E6%8A%A5%E6%96%87%E4%B8%8E%E5%B9%BF%E6%92%AD%E9%93%BE%E8%B7%AF"><span class="nav-number">2.3.</span> <span class="nav-text">广播报文与广播链路</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%81%E7%A8%8B"><span class="nav-number">3.</span> <span class="nav-text">流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E-PMK"><span class="nav-number">4.</span> <span class="nav-text">关于 PMK</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E-GMK"><span class="nav-number">5.</span> <span class="nav-text">关于 GMK</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -227,7 +228,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-08-31 15:32:28" itemprop="dateModified" datetime="2024-08-31T15:32:28+08:00">2024-08-31</time>
+      <time title="修改时间：2026-05-15 18:03:12" itemprop="dateModified" datetime="2026-05-15T18:03:12+08:00">2026-05-15</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -252,77 +253,81 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>本文在于阐述我对WiFi网络中各站点之间加密方式的理解</p>
-<h1 id="提问"><a href="#提问" class="headerlink" title="提问"></a>提问</h1><p>此前, 我有过这样一个疑惑:</p>
-<p>wifi的数据传输形式为广播, 那么考虑一下, 当A站发送数据给B站时</p>
+    <div class="post-body" itemprop="articleBody"><p>本文在于阐述我对 WiFi 网络中各站点之间加密方式的理解。</p>
+<h2 id="提问"><a href="#提问" class="headerlink" title="提问"></a>提问</h2><p>此前，我有过这样一个疑惑：</p>
+<p>wifi 的数据传输形式为广播，那么考虑一下，当 A 站发送数据给 B 站时</p>
 <ol>
-<li>如果A站和B站之间信号不直接可达, 那么数据将会先由A站流往AP(接入点&#x2F;基站&#x2F;路由器), 再由AP流往B站, 即靠AP做转发</li>
-<li>如果A站和B站之间信号直接可达, 数据广播出去后, AP和B站都会收到这个数据, 那么B站是直接接受还是抛弃?又由于AP并不知道B站是否已经接收, 所以会坚持转发一次, 如果B站直接接受了, 岂不是会导致数据无条件重发?</li>
+<li>如果 A 站和 B 站之间信号不直接可达，那么数据将会先由 A 站流往 AP（接入点&#x2F;基站&#x2F;路由器），再由 AP 流往 B 站，即靠 AP 做转发</li>
+<li>如果 A 站和 B 站之间信号直接可达，数据广播出去后，AP 和 B 站都会收到这个数据，那么 B 站是直接接受还是抛弃？又由于 AP 并不知道 B 站是否已经接收，所以会坚持转发一次，如果 B 站直接接受了，岂不是会导致数据无条件重发？</li>
 </ol>
-<p>在理解了wifi的数据加密形式后, 疑惑也被顺便解开了</p>
+<p>在理解了 wifi 的数据加密形式后，疑惑也被顺便解开了。</p>
 <span id="more"></span>
 
-<p>PS: 说wifi其实不严谨, 802.11会更规范一点, 不过为了方便理解, 直接说wifi也无妨, 毕竟有挺多人尚不了解802.11和wifi的关系</p>
-<h1 id="共识"><a href="#共识" class="headerlink" title="共识"></a>共识</h1><p>行文开始前先做一些概念约束以及一些我的个人观点</p>
-<h3 id="模式限定"><a href="#模式限定" class="headerlink" title="模式限定"></a>模式限定</h3><p>探讨范围限定在AP模式, 也就是最流行的wifi接入模式, 不涉及Ad-hoc模式, 简要的描述就是:</p>
+<p>PS：说 wifi 其实不严谨，802.11 会更规范一点，不过为了方便理解，直接说 wifi 也无妨，因为不少读者可能不熟悉 802.11 和 wifi 的关系。</p>
+<h2 id="共识"><a href="#共识" class="headerlink" title="共识"></a>共识</h2><p>行文开始前先做一些概念约束以及一些我的个人观点。</p>
+<h3 id="模式限定"><a href="#模式限定" class="headerlink" title="模式限定"></a>模式限定</h3><p>探讨范围限定在 AP 模式，也就是最流行的 wifi 接入模式，不涉及 Ad-hoc 模式，简要的描述就是：</p>
 <ul>
-<li>有一个无线设备工作在AP模式, 承担基站的角色(路由器)</li>
-<li>其他所有的设备全部和基站建立无线链路(手机,平板,笔记本…接入wifi)</li>
-<li>所有站点之间的数据通信均通过基站进行转发, 类似于C&#x2F;S模式</li>
-<li>只要基站挂掉, 所有站点之间将无法互相通信</li>
+<li>有一个无线设备工作在 AP 模式，承担基站的角色（路由器）</li>
+<li>其他所有的设备全部和基站建立无线链路（手机、平板、笔记本……接入 wifi）</li>
+<li>所有站点之间的数据通信均通过基站进行转发，类似于 C&#x2F;S 模式</li>
+<li>只要基站挂掉，所有站点之间将无法互相通信</li>
 </ul>
-<h3 id="通信数据安全"><a href="#通信数据安全" class="headerlink" title="通信数据安全"></a>通信数据安全</h3><p>一般而言, 通信数据的加密手段不同于数据存储, 对于数据存储, 通常采用对称加密, 且只用一把密钥, 而通信数据的做法大致是这样的:</p>
+<h3 id="通信数据安全"><a href="#通信数据安全" class="headerlink" title="通信数据安全"></a>通信数据安全</h3><p>一般而言，通信数据的加密手段不同于数据存储。对于数据存储，通常采用对称加密，且只用一把密钥；而通信数据的做法大致是这样的：</p>
 <ul>
-<li>通信双方共享一把高强度的初始密钥K</li>
-<li>通信双方在(高强度算法+密钥K)创建的安全链路中协商出一把较低强度的密钥k</li>
-<li>接下来的通信均使用较低强度的算法和密钥k加密(减轻计算负载)</li>
-<li>每隔一定时间, 通信双方在(高强度算法+密钥K)创建的安全链路中重新协商出一把较低强度的新密钥k2, 替代上一次的密钥k, 进行接下来的通信</li>
-<li>一直使用同一把密钥是很不安全的做法, 因为采集越多的密文样本, 对于破译密钥来说越是有利的, 所以通信数据加密通常都会采取定期更换密钥的做法来提高数据安全</li>
+<li>通信双方共享一把长期的主密钥 K</li>
+<li>通信双方基于 K 做一次安全握手，派生出一把当前会话使用的密钥 k</li>
+<li>接下来的通信均使用 k 加密</li>
+<li>每隔一定时间，双方重新派生出一把新的会话密钥 k2，替换 k，继续后续通信</li>
 </ul>
-<h3 id="广播报文与广播链路"><a href="#广播报文与广播链路" class="headerlink" title="广播报文与广播链路"></a>广播报文与广播链路</h3><p>在广播式链路上发送广播报文具有得天独厚的优势</p>
+<p>这样做的好处有两点：</p>
 <ul>
-<li>古老的集线器也是广播式链路, 某站点要发送一个广播报文, 集线器不需要任何处理, 只需要把广播报文当成普通报文广播即可</li>
-<li>交换机将集线器的广播式链路改成了点对点链路, 某站点要发送一个广播报文, 交换机只能将该报文从每一个端口发送一次</li>
-<li>wifi使用无线电通讯, 自然也是广播链路, 因此, 某站点要发送一个广播报文, AP只需要发送一次数据即可, 无需将广播报文挨个站点发送一次</li>
+<li><strong>密钥分离</strong>：会话密钥 k 即便泄露也不会牵连主密钥 K，反过来主密钥被攻破之前的历史会话也不会因为一把 k 的泄露而全军覆没</li>
+<li><strong>密钥新鲜度</strong>：同一把密钥加密的样本越多，越有利于密码分析。即便算法本身没被破，定期轮换密钥也能提高整体的安全性</li>
 </ul>
-<h1 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h1><p>大致流程如下(忽略广播)</p>
+<h3 id="广播报文与广播链路"><a href="#广播报文与广播链路" class="headerlink" title="广播报文与广播链路"></a>广播报文与广播链路</h3><p>在广播式链路上发送广播报文具有得天独厚的优势：</p>
+<ul>
+<li>古老的集线器也是广播式链路，某站点要发送一个广播报文，集线器不需要任何处理，只需要把广播报文当成普通报文广播即可</li>
+<li>交换机将集线器的广播式链路改成了点对点链路，某站点要发送一个广播报文，交换机只能将该报文从每一个端口发送一次</li>
+<li>wifi 使用无线电通讯，自然也是广播链路，因此，某站点要发送一个广播报文，AP 只需要发送一次数据即可，无需将广播报文挨个站点发送一次</li>
+</ul>
+<h2 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h2><p>大致流程如下（忽略广播）：</p>
 <ol>
-<li>AP和站点之间共享相同的初始密钥PMK(Pairwise Master Key), 关于PMK的来源后文会给出</li>
-<li>每当有站点请求接入AP, AP和站点之间就会通过PMK生成出一把正式传输数据用到的密钥PTK(Pairwise Transient Key)</li>
-<li>AP和站点之间的通讯全部使用PTK加密</li>
+<li>AP 和站点之间共享相同的初始密钥 PMK（Pairwise Master Key），关于 PMK 的来源后文会给出</li>
+<li>每当有站点请求接入 AP，AP 和站点之间就会通过 PMK 生成出一把正式传输数据用到的密钥 PTK（Pairwise Transient Key）</li>
+<li>AP 和站点之间的通讯全部使用 PTK 加密</li>
 </ol>
-<p>如果稍加留意, 你会发现, 每个站点和AP之间都维护着一个PTK, 但是站点和站点之间是不共享PTK的, 站点A和AP之间的通讯使用PTKa, 站点B和AP之间的通讯使用PTKb</p>
-<p>因此, 站点A是没有能力和站点B直接通讯的, 必须经由AP做数据转发, 也就是说, 即使站点B接收到了站点A发出的帧中白纸黑字写着”接收方为站点B”, 站点B也不得不抛弃, 因为帧中的载荷数据是使用PTKa加密的, 而站点B并不知道PTKa, 只能等待AP解析此帧, 并换用PTKb加密后重新发送一个新帧, 站点B才可以看见来自站点A的数据</p>
-<p>换言之, PTK的方式保证了站点和站点之间在链路上是”隔离”的, 任何站点都无法嗅探到不是发送给他的数据</p>
-<p>接下来谈谈数据的广播, 如果站点A需要发送IP广播, 单借助PTK, 也是可以做到的: 站点A将广播包发送给AP, AP再将广播包重新编码逐个发给所有接入的站点, 但这种做法太愚蠢, 现实的流程如下</p>
+<p>如果稍加留意，你会发现，每个站点和 AP 之间都维护着一个 PTK，但是站点和站点之间是不共享 PTK 的，站点 A 和 AP 之间的通讯使用 PTKa，站点 B 和 AP 之间的通讯使用 PTKb。</p>
+<p>因此，站点 A 是没有能力和站点 B 直接通讯的，必须经由 AP 做数据转发，也就是说，即使站点 B 接收到了站点 A 发出的帧中白纸黑字写着”接收方为站点 B”，站点 B 也不得不抛弃，因为帧中的载荷数据是使用 PTKa 加密的，而站点 B 并不知道 PTKa，只能等待 AP 解析此帧，并换用 PTKb 加密后重新发送一个新帧，站点 B 才可以看见来自站点 A 的数据。</p>
+<p>换言之，PTK 的方式保证了站点和站点之间在链路上是 “隔离” 的，任何站点都无法嗅探到不是发送给它的数据。</p>
+<p>接下来谈谈数据的广播，如果站点 A 需要发送 IP 广播，单借助 PTK，也是可以做到的：站点 A 将广播包发送给 AP，AP 再将广播包重新编码逐个发给所有接入的站点，但这种做法太愚蠢，现实的流程如下：</p>
 <ol>
-<li>AP启动后生成一个随机初始密钥, GMK(Group Master Key)</li>
-<li>AP使用GMK通过某种算法, 衍生出一个用于加密广播&#x2F;组播数据的密钥GTK</li>
-<li>每个接入AP的站点在得到了PTK后, AP将GTK使用PTK加密后发送给站点</li>
+<li>AP 启动后生成一个随机初始密钥 GMK（Group Master Key）</li>
+<li>AP 使用 GMK 通过某种算法，衍生出一个用于加密广播&#x2F;组播数据的密钥 GTK</li>
+<li>每个接入 AP 的站点在得到了 PTK 后，AP 将 GTK 使用 PTK 加密后发送给站点</li>
 </ol>
-<p>换言之, 所有站点都持有相同的GTK, 那么站点发送IP广播的流程究竟是怎么样的呢?最容易想到的有两种</p>
-<p>第一种, 站点直接通过GTK进行广播</p>
+<p>换言之，所有站点都持有相同的 GTK，那么站点发送 IP 广播的流程究竟是怎么样的呢？最容易想到的有两种。</p>
+<p>第一种，站点直接通过 GTK 进行广播：</p>
 <ol>
-<li>站点A使用GTK加密广播包并发送</li>
-<li>站点B接收到从站点A发出的广播包</li>
-<li>站点C离A较远, 没能收到从站点A发出的广播包</li>
-<li>AP收到了从站点A发出的广播包, 然后做一次接力转发</li>
-<li>所有站点接收到从AP转发的广播包</li>
+<li>站点 A 使用 GTK 加密广播包并发送</li>
+<li>站点 B 接收到从站点 A 发出的广播包</li>
+<li>站点 C 离 A 较远，没能收到从站点 A 发出的广播包</li>
+<li>AP 收到了从站点 A 发出的广播包，然后做一次接力转发</li>
+<li>所有站点接收到从 AP 转发的广播包</li>
 </ol>
-<p>第二种, 由AP通过GTK进行广播</p>
+<p>第二种，由 AP 通过 GTK 进行广播：</p>
 <ol>
-<li>站点A使用PTKa加密广播包并发送</li>
-<li>AP接收到从站点A发出的广播包</li>
-<li>AP解码接收到的广播包, 并使用GTK加密该广播包, 再接力转发出去</li>
-<li>所有站点接收到该AP转发的广播包</li>
+<li>站点 A 使用 PTKa 加密广播包并发送</li>
+<li>AP 接收到从站点 A 发出的广播包</li>
+<li>AP 解码接收到的广播包，并使用 GTK 加密该广播包，再接力转发出去</li>
+<li>所有站点接收到该 AP 转发的广播包</li>
 </ol>
-<p>不难看出, 第二种方式是最优的, 因为模式简单且和单播方式统一, 而且第一种方式会造成站点重复接收广播包<br>事实上也的确采用的第二种方式. 所以, GTK对于站点来说, 只用于解密, 对于AP来说, 只用于加密</p>
-<p>总结: <strong>wifi网络内的所有站点间的所有通信都必须交给AP转发, 站点和站点之间不存在任何直接通信行为</strong></p>
-<h1 id="关于PMK"><a href="#关于PMK" class="headerlink" title="关于PMK"></a>关于PMK</h1><p>PMK是怎么来的呢?</p>
-<p>简单的说, 接入wifi时需要你填的那个密码被称之为PSK(Pre-Shared Key), 将PSK使用一套算法进行一次转换, 就是所谓的PMK了</p>
-<p>当然, PMK不仅仅可以通过PSK得到, 如果wifi使用802.11x的企业级证书认证方式(民用wifi很少支持这种认证方式), 那么, PMK就是标准的非对称密钥生成的对称密钥</p>
-<h1 id="关于GMK"><a href="#关于GMK" class="headerlink" title="关于GMK"></a>关于GMK</h1><p>此前我认为: GMK可能只是为了和PMK概念对称, 实际使用中, 感觉完全没有存在的必要, AP每次都生成一个随机串作为GTK就可以了</p>
-<p>如今我认为: GMK的存在是有必要的, 在多AP协同工作时需要维持相同的GMK, 譬如无缝漫游功能</p>
+<p>不难看出，第二种方式是最优的，因为模式简单且和单播方式统一，而且第一种方式会造成站点重复接收广播包。事实上也的确采用的第二种方式。所以，GTK 对于站点来说，只用于解密，对于 AP 来说，只用于加密。</p>
+<p>总结：<strong>wifi 网络内的所有站点间的所有通信都必须交给 AP 转发，站点和站点之间不存在任何直接通信行为。</strong></p>
+<h2 id="关于-PMK"><a href="#关于-PMK" class="headerlink" title="关于 PMK"></a>关于 PMK</h2><p>PMK 是怎么来的呢？</p>
+<p>简单的说，接入 wifi 时需要你填的那个密码被称之为 PSK（Pre-Shared Key），将 PSK 使用一套算法进行一次转换，就是所谓的 PMK 了。</p>
+<p>当然，PMK 不仅仅可以通过 PSK 得到，如果 wifi 使用 802.1X 的企业级证书认证方式（民用 wifi 很少支持这种认证方式），那么，PMK 就是标准的非对称密钥生成的对称密钥。</p>
+<h2 id="关于-GMK"><a href="#关于-GMK" class="headerlink" title="关于 GMK"></a>关于 GMK</h2><p>此前我认为：GMK 可能只是为了和 PMK 概念对称，实际使用中，感觉完全没有存在的必要，AP 每次都生成一个随机串作为 GTK 就可以了。</p>
+<p>如今我认为：GMK 的存在是为了方便 GTK 的周期性轮换——比如有站点退出网络时，应当更换 GTK 让退出的站点无法继续解密后续的广播数据，由 GMK 经过派生算出新 GTK，比每次都重新生成随机串要更轻量、可控。GMK 是某个 AP 自己内部的事，并不在多个 AP 之间共享。</p>
 
     </div>
 
