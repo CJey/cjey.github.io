@@ -1,346 +1,261 @@
-<!doctype html>
-
-
-
-
-<html class="theme-next mist">
+<!DOCTYPE html>
+<html lang="zh-Hans">
 <head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
 
 
 
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
 
+<script class="next-config" data-name="main" type="application/json">{"hostname":"cjey.me","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js" defer></script>
 
-
-
-
-
-
-
-
-
-
-
-  
-  
-  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
-
-
-
-
-  
-  
-  
-  
-
-  
-    
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    
-    
-    <link href="//fonts-googleapis-com.cjey.me/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
-  
-
-
-
-
-
-
-<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
-
-<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
-
-
-  <meta name="keywords" content="Wifi,加密,安全," />
-
-
-
-
-
-
-
-
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
-
-
-
-
-
-
-<meta name="description" content="本文在于阐述我对WiFi网络中各站点之间加密方式的理解 提问此前, 我有过这样一个疑惑: wifi的数据传输形式为广播, 那么考虑一下, 当A站发送数据给B站时  如果A站和B站之间信号不直接可达, 那么数据将会先由A站流往AP(接入点/基站/路由器), 再由AP流往B站, 即靠AP做转发 如果A站和B站之间信号直接可达, 数据广播出去后, AP和B站都会收到这个数据, 那么B站是直接接受还是抛弃">
-<meta name="keywords" content="Wifi,加密,安全">
+    <meta name="description" content="本文在于阐述我对WiFi网络中各站点之间加密方式的理解 提问此前, 我有过这样一个疑惑: wifi的数据传输形式为广播, 那么考虑一下, 当A站发送数据给B站时  如果A站和B站之间信号不直接可达, 那么数据将会先由A站流往AP(接入点&#x2F;基站&#x2F;路由器), 再由AP流往B站, 即靠AP做转发 如果A站和B站之间信号直接可达, 数据广播出去后, AP和B站都会收到这个数据, 那么B">
 <meta property="og:type" content="article">
 <meta property="og:title" content="WiFi 数据加密的形式">
 <meta property="og:url" content="https://cjey.me/posts/wifisecurity/index.html">
 <meta property="og:site_name" content="不思鱼">
-<meta property="og:description" content="本文在于阐述我对WiFi网络中各站点之间加密方式的理解 提问此前, 我有过这样一个疑惑: wifi的数据传输形式为广播, 那么考虑一下, 当A站发送数据给B站时  如果A站和B站之间信号不直接可达, 那么数据将会先由A站流往AP(接入点/基站/路由器), 再由AP流往B站, 即靠AP做转发 如果A站和B站之间信号直接可达, 数据广播出去后, AP和B站都会收到这个数据, 那么B站是直接接受还是抛弃">
-<meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-04-11T05:58:38.368Z">
+<meta property="og:description" content="本文在于阐述我对WiFi网络中各站点之间加密方式的理解 提问此前, 我有过这样一个疑惑: wifi的数据传输形式为广播, 那么考虑一下, 当A站发送数据给B站时  如果A站和B站之间信号不直接可达, 那么数据将会先由A站流往AP(接入点&#x2F;基站&#x2F;路由器), 再由AP流往B站, 即靠AP做转发 如果A站和B站之间信号直接可达, 数据广播出去后, AP和B站都会收到这个数据, 那么B">
+<meta property="og:locale">
+<meta property="article:published_time" content="2015-06-15T11:37:07.000Z">
+<meta property="article:modified_time" content="2024-08-31T07:32:28.641Z">
+<meta property="article:author" content="CJey">
+<meta property="article:tag" content="Wifi">
+<meta property="article:tag" content="加密">
+<meta property="article:tag" content="安全">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="WiFi 数据加密的形式">
-<meta name="twitter:description" content="本文在于阐述我对WiFi网络中各站点之间加密方式的理解 提问此前, 我有过这样一个疑惑: wifi的数据传输形式为广播, 那么考虑一下, 当A站发送数据给B站时  如果A站和B站之间信号不直接可达, 那么数据将会先由A站流往AP(接入点/基站/路由器), 再由AP流往B站, 即靠AP做转发 如果A站和B站之间信号直接可达, 数据广播出去后, AP和B站都会收到这个数据, 那么B站是直接接受还是抛弃">
+
+
+<link rel="canonical" href="https://cjey.me/posts/wifisecurity/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-Hans","comments":true,"permalink":"https://cjey.me/posts/wifisecurity/","path":"posts/wifisecurity/","title":"WiFi 数据加密的形式"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>WiFi 数据加密的形式 | 不思鱼</title>
+  
 
 
 
-<script type="text/javascript" id="hexo.configuration">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    scheme: 'Mist',
-    sidebar: {"position":"left","display":"post"},
-    fancybox: true,
-    motion: false,
-    duoshuo: {
-      userId: 0,
-      author: '博主'
-    }
-  };
-</script>
 
-  <title> WiFi 数据加密的形式 | 不思鱼 </title>
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
 
-  
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
 
+  <div class="site-meta">
 
-
-
-
-
-
-
-
-
-  
-  
-    
-  
-
-  <div class="container one-collumn sidebar-position-left page-post-detail ">
-    <div class="headband"></div>
-
-    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-meta ">
-  
-
-  <div class="custom-logo-site-title">
-    <a href="/"  class="brand" rel="start">
-      <span class="site-title">不思鱼</span>
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">不思鱼</p>
+      <i class="logo-line"></i>
     </a>
   </div>
-  <p class="site-subtitle"></p>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
 </div>
 
-<div class="site-nav-toggle">
-  <button>
-    <span class="btn-bar"></span>
-    <span class="btn-bar"></span>
-    <span class="btn-bar"></span>
-  </button>
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8F%90%E9%97%AE"><span class="nav-number">1.</span> <span class="nav-text">提问</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B1%E8%AF%86"><span class="nav-number">2.</span> <span class="nav-text">共识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%BC%8F%E9%99%90%E5%AE%9A"><span class="nav-number">2.1.</span> <span class="nav-text">模式限定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E4%BF%A1%E6%95%B0%E6%8D%AE%E5%AE%89%E5%85%A8"><span class="nav-number">2.2.</span> <span class="nav-text">通信数据安全</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%BF%E6%92%AD%E6%8A%A5%E6%96%87%E4%B8%8E%E5%B9%BF%E6%92%AD%E9%93%BE%E8%B7%AF"><span class="nav-number">2.3.</span> <span class="nav-text">广播报文与广播链路</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B5%81%E7%A8%8B"><span class="nav-number">3.</span> <span class="nav-text">流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E4%BA%8EPMK"><span class="nav-number">4.</span> <span class="nav-text">关于PMK</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E4%BA%8EGMK"><span class="nav-number">5.</span> <span class="nav-text">关于GMK</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CJey</p>
+  <div class="site-description" itemprop="description">记录对行业的理解, 对技术的理解, 解决问题的思路, 新奇想法的分享</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
 </div>
 
-<nav class="site-nav">
-  
-
-  
-    <ul id="menu" class="menu">
-      
-        
-        <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
-            
-            首页
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-categories">
-          <a href="/categories/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
-            
-            分类
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-tags">
-          <a href="/tags/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
-            
-            标签
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-archives">
-          <a href="/archives/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
-            
-            归档
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-about">
-          <a href="/about/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
-            
-            关于
-          </a>
-        </li>
-      
-
-      
-    </ul>
-  
-
-  
-</nav>
-
- </div>
-    </header>
-
-    <main id="main" class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
-    
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+        </div>
+      </div>
+    </div>
 
     
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://cjey.me/posts/wifisecurity/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CJey">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不思鱼">
+      <meta itemprop="description" content="记录对行业的理解, 对技术的理解, 解决问题的思路, 新奇想法的分享">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="WiFi 数据加密的形式 | 不思鱼">
+      <meta itemprop="description" content="">
+    </span>
       <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          WiFi 数据加密的形式
+        </h1>
 
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                WiFi 数据加密的形式
-              
-            
-          </h1>
-        
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
 
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-06-15T19:37:07+08:00" content="2015-06-15">
-              2015-06-15
-            </time>
-          </span>
+      <time title="Created: 2015-06-15 19:37:07" itemprop="dateCreated datePublished" datetime="2015-06-15T19:37:07+08:00">2015-06-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-08-31 15:32:28" itemprop="dateModified" datetime="2024-08-31T15:32:28+08:00">2024-08-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/%E9%93%BE%E8%B7%AF%E5%B1%82/" itemprop="url" rel="index"><span itemprop="name">链路层</span></a>
+        </span>
+    </span>
 
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/网络/" itemprop="url" rel="index">
-                    <span itemprop="name">网络</span>
-                  </a>
-                </span>
+  
+</div>
 
-                
-                
-                  ， 
-                
-
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/网络/链路层/" itemprop="url" rel="index">
-                    <span itemprop="name">链路层</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-
-          
-          
-
-          
-              &nbsp; | &nbsp;
-              <span class="page-pv"><i class="fa fa-file-o"></i>
-              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
-              </span>
-          
         </div>
       </header>
+
     
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        <p>本文在于阐述我对WiFi网络中各站点之间加密方式的理解</p>
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>本文在于阐述我对WiFi网络中各站点之间加密方式的理解</p>
 <h1 id="提问"><a href="#提问" class="headerlink" title="提问"></a>提问</h1><p>此前, 我有过这样一个疑惑:</p>
 <p>wifi的数据传输形式为广播, 那么考虑一下, 当A站发送数据给B站时</p>
 <ol>
-<li>如果A站和B站之间信号不直接可达, 那么数据将会先由A站流往AP(接入点/基站/路由器), 再由AP流往B站, 即靠AP做转发</li>
+<li>如果A站和B站之间信号不直接可达, 那么数据将会先由A站流往AP(接入点&#x2F;基站&#x2F;路由器), 再由AP流往B站, 即靠AP做转发</li>
 <li>如果A站和B站之间信号直接可达, 数据广播出去后, AP和B站都会收到这个数据, 那么B站是直接接受还是抛弃?又由于AP并不知道B站是否已经接收, 所以会坚持转发一次, 如果B站直接接受了, 岂不是会导致数据无条件重发?</li>
 </ol>
 <p>在理解了wifi的数据加密形式后, 疑惑也被顺便解开了</p>
-<a id="more"></a>
+<span id="more"></span>
+
 <p>PS: 说wifi其实不严谨, 802.11会更规范一点, 不过为了方便理解, 直接说wifi也无妨, 毕竟有挺多人尚不了解802.11和wifi的关系</p>
 <h1 id="共识"><a href="#共识" class="headerlink" title="共识"></a>共识</h1><p>行文开始前先做一些概念约束以及一些我的个人观点</p>
 <h3 id="模式限定"><a href="#模式限定" class="headerlink" title="模式限定"></a>模式限定</h3><p>探讨范围限定在AP模式, 也就是最流行的wifi接入模式, 不涉及Ad-hoc模式, 简要的描述就是:</p>
 <ul>
 <li>有一个无线设备工作在AP模式, 承担基站的角色(路由器)</li>
 <li>其他所有的设备全部和基站建立无线链路(手机,平板,笔记本…接入wifi)</li>
-<li>所有站点之间的数据通信均通过基站进行转发, 类似于C/S模式</li>
+<li>所有站点之间的数据通信均通过基站进行转发, 类似于C&#x2F;S模式</li>
 <li>只要基站挂掉, 所有站点之间将无法互相通信</li>
 </ul>
 <h3 id="通信数据安全"><a href="#通信数据安全" class="headerlink" title="通信数据安全"></a>通信数据安全</h3><p>一般而言, 通信数据的加密手段不同于数据存储, 对于数据存储, 通常采用对称加密, 且只用一把密钥, 而通信数据的做法大致是这样的:</p>
@@ -369,7 +284,7 @@
 <p>接下来谈谈数据的广播, 如果站点A需要发送IP广播, 单借助PTK, 也是可以做到的: 站点A将广播包发送给AP, AP再将广播包重新编码逐个发给所有接入的站点, 但这种做法太愚蠢, 现实的流程如下</p>
 <ol>
 <li>AP启动后生成一个随机初始密钥, GMK(Group Master Key)</li>
-<li>AP使用GMK通过某种算法, 衍生出一个用于加密广播/组播数据的密钥GTK</li>
+<li>AP使用GMK通过某种算法, 衍生出一个用于加密广播&#x2F;组播数据的密钥GTK</li>
 <li>每个接入AP的站点在得到了PTK后, AP将GTK使用PTK加密后发送给站点</li>
 </ol>
 <p>换言之, 所有站点都持有相同的GTK, 那么站点发送IP广播的流程究竟是怎么样的呢?最容易想到的有两种</p>
@@ -396,323 +311,77 @@
 <h1 id="关于GMK"><a href="#关于GMK" class="headerlink" title="关于GMK"></a>关于GMK</h1><p>此前我认为: GMK可能只是为了和PMK概念对称, 实际使用中, 感觉完全没有存在的必要, AP每次都生成一个随机串作为GTK就可以了</p>
 <p>如今我认为: GMK的存在是有必要的, 在多AP协同工作时需要维持相同的GMK, 譬如无缝漫游功能</p>
 
-      
     </div>
 
-    <div>
-      
-        
-      
-    </div>
-
-    <div>
-      
-        
-
-      
-    </div>
+    
+    
+    
 
     <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/Wifi/" rel="tag">#Wifi</a>
-          
-            <a href="/tags/加密/" rel="tag">#加密</a>
-          
-            <a href="/tags/安全/" rel="tag">#安全</a>
-          
-        </div>
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/posts/smartconfig/" rel="next" title="Smart Config 技术原理">
-                <i class="fa fa-chevron-left"></i> Smart Config 技术原理
-              </a>
-            
+          <div class="post-tags">
+              <a href="/tags/Wifi/" rel="tag"># Wifi</a>
+              <a href="/tags/%E5%8A%A0%E5%AF%86/" rel="tag"># 加密</a>
+              <a href="/tags/%E5%AE%89%E5%85%A8/" rel="tag"># 安全</a>
           </div>
 
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/posts/icmpredirect/" rel="prev" title="记一次网络诊断 - 切换wifi后主机无法访问服务器">
-                记一次网络诊断 - 切换wifi后主机无法访问服务器 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
+        
 
-      
-      
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/smartconfig/" rel="prev" title="Smart Config 技术原理">
+                  <i class="fa fa-angle-left"></i> Smart Config 技术原理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/icmpredirect/" rel="next" title="记一次网络诊断 - 切换wifi后主机无法访问服务器">
+                  记一次网络诊断 - 切换wifi后主机无法访问服务器 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
     </footer>
   </article>
-
-
-
-    <div class="post-spread">
-      
-    </div>
-  </div>
-
-
-          </div>
-          
-
-
-          
-  <div class="comments" id="comments">
-    
-  </div>
-
-
-        </div>
-        
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <section class="site-overview sidebar-panel ">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image"
-               src="/images/avatar.jpg"
-               alt="CJey" />
-          <p class="site-author-name" itemprop="name">CJey</p>
-          <p class="site-description motion-element" itemprop="description">记录对行业的理解, 对技术的理解, 解决问题的思路, 新奇想法的分享</p>
-        </div>
-        <nav class="site-state motion-element">
-          <div class="site-state-item site-state-posts">
-            <a href="/archives/">
-              <span class="site-state-item-count">4</span>
-              <span class="site-state-item-name">日志</span>
-            </a>
-          </div>
-
-          
-            <div class="site-state-item site-state-categories">
-              <a href="/categories/">
-                <span class="site-state-item-count">7</span>
-                <span class="site-state-item-name">分类</span>
-              </a>
-            </div>
-          
-
-          
-            <div class="site-state-item site-state-tags">
-              <a href="/tags/">
-                <span class="site-state-item-count">12</span>
-                <span class="site-state-item-name">标签</span>
-              </a>
-            </div>
-          
-
-        </nav>
-
-        
-
-        <div class="links-of-author motion-element">
-          
-            
-              <span class="links-of-author-item">
-                <a href="https://github.com/cjey" target="_blank" title="GitHub">
-                  
-                    <i class="fa fa-fw fa-github"></i>
-                  
-                  GitHub
-                </a>
-              </span>
-            
-          
-        </div>
-
-        
-        
-          <div class="cc-license motion-element" itemprop="license">
-            <a href="http://creativecommons.org/licenses/by/4.0" class="cc-opacity" target="_blank">
-              <img src="/images/cc-by.svg" alt="Creative Commons" />
-            </a>
-          </div>
-        
-
-        
-        
-
-      </section>
-
-      
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-            
-              
-            
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#提问"><span class="nav-number">1.</span> <span class="nav-text">提问</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#共识"><span class="nav-number">2.</span> <span class="nav-text">共识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#模式限定"><span class="nav-number">2.0.1.</span> <span class="nav-text">模式限定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通信数据安全"><span class="nav-number">2.0.2.</span> <span class="nav-text">通信数据安全</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#广播报文与广播链路"><span class="nav-number">2.0.3.</span> <span class="nav-text">广播报文与广播链路</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#流程"><span class="nav-number">3.</span> <span class="nav-text">流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关于PMK"><span class="nav-number">4.</span> <span class="nav-text">关于PMK</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关于GMK"><span class="nav-number">5.</span> <span class="nav-text">关于GMK</span></a></li></ol></div>
-            
-          </div>
-        </section>
-      
-
-    </div>
-  </aside>
-
-
-        
-      </div>
-    </main>
-
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <div class="copyright" >
-  
-  &copy;  2015 - 
-  <span itemprop="copyrightYear">2018</span>
-  <span class="with-love">
-    <i class="fa fa-heart"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">CJey</span>
-</div>
-
-<div class="powered-by">
-  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
-</div>
-
-<div class="theme-info">
-  主题 -
-  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
-    NexT.Mist
-  </a>
-</div>
-
-        
-
-<div class="busuanzi-count">
-
-  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
-  
-    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
-  
-
-  
-    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
-  
-  
 </div>
 
 
 
-        
-      </div>
-    </footer>
 
-    <div class="back-to-top">
-      <i class="fa fa-arrow-up"></i>
-    </div>
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2015 – 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">CJey</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a>
   </div>
 
-  
-
-<script type="text/javascript">
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
-</script>
-
-
-
-
-
-
-
-
+    </div>
+  </footer>
 
   
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
 
-
-
-  
-  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
-
-  
-  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-
-  
-  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-
-  
-  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
-
-
-
-  
-
-
-
-  
-
-
-
-  
-  
-  
-
-  
-
-  
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
 
 </body>
 </html>
